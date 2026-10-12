@@ -210,7 +210,7 @@ Los casos de prueba iniciales deberán actualizarse al balance, especialmente pa
 
 ## Diagrama de Roles
 
-![Dia]()
+![Diagrama de Roles](images/roles_diagram.png)
 
 ## Equipo
 
