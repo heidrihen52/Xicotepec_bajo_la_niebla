@@ -36,6 +36,8 @@ Ingeniería en Desarrollo y Gestión de Software · Décimo cuatrimestre
 
 </div>
 
+[Diagrama de secuencia](./DiagramaDeSecuencia/)
+
 ---
 
 ## Acerca del proyecto
