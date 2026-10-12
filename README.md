@@ -208,6 +208,10 @@ La validación contempla:
 
 Los casos de prueba iniciales deberán actualizarse al balance, especialmente para el dron EMP, la resortera direccional y las habilidades Ultimate. Los resultados, versiones y evidencias se registrarán antes de declarar lista una entrega.
 
+## Diagrama de Roles
+
+![Diagrama de Roles](images/roles_diagram.png)
+
 ## Equipo
 
 | Integrante | Áreas de trabajo propuestas |
