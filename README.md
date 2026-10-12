@@ -1,5 +1,8 @@
 <div align="center">
 
+<img src="images/lumbre_studio_transparent.png" alt="Lumbre Studio" width="220" />
+<img src="images/xicotepec_bajo_la_niebla.png" alt="Xicotepec bajo la niebla" width="280" />
+
 # Xicotepec bajo la niebla
 
 **Una aventura de acción y plataformas para descubrir Xicotepec a través del juego.**
