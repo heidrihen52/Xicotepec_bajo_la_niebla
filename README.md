@@ -39,7 +39,13 @@ Ingeniería en Desarrollo y Gestión de Software · Décimo cuatrimestre
 
 </div>
 
+## Diagrama de secuencia
 [Diagrama de secuencia](./DiagramaDeSecuencia/)
+
+## Modelo Canvas
+[Link en git Pages](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/BusinessModelCanva/)
+
+## Manual de instalacion
 
 ---
 
@@ -215,9 +221,6 @@ Los casos de prueba iniciales deberán actualizarse al balance, especialmente pa
 
 ![Diagrama de Roles](images/roles_diagram.png)
 
-## Modelo Canvas
-
-[Link en git Pages](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/BusinessModelCanva/)
 
 ## Equipo
 
