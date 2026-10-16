@@ -1,7 +1,7 @@
+# Instalación y Configuración de un Entorno de Desarrollo con Flutter
 [📄 Descargar Manual de Flutter](<Manual de Flutter.pdf>)
 
-# Instalación y Configuración de un Entorno de Desarrollo con Flutter
-
+[Ver carpeta docker](Docker/)
 ## Integrantes
 
 - Adrián Pérez Jiménez
@@ -54,4 +54,4 @@ Con Docker Desktop abierto, ejecuta desde la carpeta principal del proyecto:
 docker compose -f docker/compose.yaml up -d
 ```
 
-[Ver archivo carpeta docker](Docker/)
+[Ver carpeta docker](Docker/)

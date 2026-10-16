@@ -46,7 +46,7 @@ Ingeniería en Desarrollo y Gestión de Software · Décimo cuatrimestre
 [Link en git Pages](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/BusinessModelCanva/)
 
 ## Manual de instalacion
-
+[Manual de Instalación](/ManualDeInstalacion/)
 ---
 
 ## Acerca del proyecto

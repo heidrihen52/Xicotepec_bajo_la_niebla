@@ -3,7 +3,7 @@
 El código es un archivo de **Docker Compose**: sirve para iniciar los cinco servicios juntos.
 
 ## Descargar archivo docker
-[Ver archivo carpeta docker](compose.yaml)
+[Ver  carpeta docker](compose.yaml)
 
 
 ## 1. Preparar el archivo
