@@ -1,5 +1,11 @@
 # Xicotepec bajo la niebla — Sketches navegables
 
+## Revisión ampliada
+
+- Abre `index-v2.html` para la portada ampliada: integra los logos originales de Lumbre Studio y Xicotepec bajo la niebla, y permite filtrar la lectura por **Visitante**, **Jugador** o **Equipo del proyecto**.
+- El recorrido conserva más de 20 sketches (31 en `index.html`) y ahora documenta por pantalla propósito, componentes, validaciones, estados sin conexión y criterio de aceptación.
+- El flujo de acceso incluye validación de correo y contraseña, contador de intentos, propuesta de bloqueo temporal tras tres errores y recuperación de contraseña con respuesta neutral. Todos esos pasos son simulaciones: no se envían datos ni se recuperan cuentas reales.
+
 Abre `index.html` directamente en un navegador moderno. El archivo integra CSS, JavaScript, dibujos a lápiz y el flujo generado con Archify; no necesita backend ni conexión a Internet.
 
 ## Github Pages
