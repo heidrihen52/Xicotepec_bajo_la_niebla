@@ -221,6 +221,10 @@ Los casos de prueba iniciales deberán actualizarse al balance, especialmente pa
 
 ![Diagrama de Roles](images/roles_diagram.png)
 
+## Diagrama de Arquitectura
+
+![Diagrama de Arquitectura](images/architecture_diagram.png)
+
 
 ## Equipo
 
