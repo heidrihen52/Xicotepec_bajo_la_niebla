@@ -13891,4 +13891,38 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
   init();
   window.addEventListener('pagehide',()=>window.__xbnForest?.destroy(),{once:true});
 })();
+</script><script>
+(() => {
+  const stylesheet = document.createElement('link');
+  stylesheet.rel = 'stylesheet';
+  stylesheet.href = new URL('./redesign.css', document.baseURI).href;
+  document.head.append(stylesheet);
+
+  const brand = document.querySelector('nav .brand');
+  if (brand && !brand.querySelector('.lumbra-logo')) {
+    const label = brand.lastChild?.textContent.trim() || 'Bajo la niebla';
+    const logo = new Image();
+    logo.className = 'lumbra-logo';
+    logo.src = '../images/lumbre_studio_transparent.png';
+    logo.alt = 'Lumbra Studio';
+
+    const identity = document.createElement('span');
+    identity.className = 'brand-identity';
+    const company = document.createElement('strong');
+    company.textContent = 'LUMBRA STUDIO';
+    const project = document.createElement('span');
+    project.textContent = label;
+    identity.append(company, project);
+    brand.replaceChildren(logo, identity);
+  }
+
+  const figure = document.querySelector('.hero figure');
+  if (figure && !figure.querySelector('.game-logo')) {
+    const logo = new Image();
+    logo.className = 'game-logo';
+    logo.src = '../images/xicotepec_bajo_la_niebla.png';
+    logo.alt = 'Logotipo de Xicotepec bajo la niebla';
+    figure.prepend(logo);
+  }
+})();
 </script></body></html>
