@@ -203,7 +203,7 @@ main { width: min(1480px, 100%); margin: 0 auto; padding: 0 clamp(16px, 3vw, 42p
   background: repeating-linear-gradient(0deg, transparent 0 11px, #dce5df08 11px 12px);
 }
 .canvas.xbn-forest .xbn-forest__layer { z-index: 0; }
-.canvas.xbn-forest > .tile {
+body #canvas .canvas.xbn-forest > button.tile {
   z-index: 1;
   min-width: 0;
   border: 3px solid var(--wood) !important;
@@ -211,18 +211,18 @@ main { width: min(1480px, 100%); margin: 0 auto; padding: 0 clamp(16px, 3vw, 42p
   color: var(--ink) !important;
   background-color: var(--parchment) !important;
   background-image: repeating-linear-gradient(0deg, transparent 0 9px, #38251c08 9px 10px) !important;
-  box-shadow: 4px 4px 0 #38251c, inset 0 0 0 2px #ffffff80 !important;
+  box-shadow: 4px 4px 0 #38251c, 7px 7px 0 #142b2740, inset 0 0 0 2px #ffffff80 !important;
   transition: transform .16s ease, box-shadow .16s ease, outline-color .16s ease;
 }
 .canvas.xbn-forest > .tile:hover, .canvas.xbn-forest > .tile:focus-visible {
   z-index: 2;
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 #38251c, 0 0 0 3px var(--amber), inset 0 0 0 2px #ffffff80 !important;
+  box-shadow: 5px 5px 0 #38251c, 9px 9px 0 #142b2755, 0 0 0 3px var(--amber), inset 0 0 0 2px #ffffff80 !important;
 }
 .canvas.xbn-forest > .tile[data-forest-active="true"] {
   outline: 3px solid var(--amber);
   outline-offset: 2px;
-  box-shadow: 0 0 0 5px #e7ad5540, 4px 4px 0 #38251c !important;
+  box-shadow: 0 0 0 5px #238c7840, 4px 4px 0 #38251c !important;
 }
 .canvas.xbn-forest .tilehead {
   position: relative;
@@ -364,20 +364,16 @@ dialog::backdrop { background: #091713d9; backdrop-filter: blur(2px); }
 }
 
 /* Profundidad y movimiento de interfaz con contraste de lectura conservado. */
-.canvas.xbn-forest > .tile {
-  background-color: rgba(242, 232, 208, .97) !important;
-  background-image: repeating-linear-gradient(0deg, transparent 0 11px, #38251c09 11px 12px) !important;
-  box-shadow: 4px 4px 0 #38251c, 7px 7px 0 #142b2740, inset 0 0 0 2px #fff9e7 !important;
-}
-.canvas.xbn-forest > .tile:hover,
-.canvas.xbn-forest > .tile:focus-visible {
+body #canvas .canvas.xbn-forest > button.tile:hover,
+body #canvas .canvas.xbn-forest > button.tile:focus-visible {
   box-shadow: 5px 5px 0 #38251c, 9px 9px 0 #142b2755, 0 0 0 3px #e7ad5570, inset 0 0 0 2px #fff9e7 !important;
 }
-.canvas.xbn-forest > .tile[data-forest-active="true"] {
+body #canvas .canvas.xbn-forest > button.tile[data-forest-active="true"] {
   outline-color: #e7ad55;
   box-shadow: 4px 4px 0 #38251c, 0 0 0 5px #238c7840, inset 0 0 0 2px #fff9e7 !important;
 }
 .canvas.xbn-forest__layer { background: linear-gradient(180deg, #dce5df08, transparent 48%, #142b2740); }
+.canvas.xbn-forest.xbn-forest-fallback .xbn-forest__layer { background: repeating-linear-gradient(0deg, transparent 0 8px, #dce5df08 8px 9px), linear-gradient(180deg, #dce5df08 0 34%, transparent 34% 55%, #142b2740 78%), linear-gradient(155deg, transparent 0 42%, #55734a35 42% 59%, transparent 59%), linear-gradient(205deg, transparent 0 51%, #1f493a55 51% 74%, transparent 74%); }
 .xbn-forest__layer canvas { image-rendering: pixelated; }
 .seed, #evolucion, #actual-futuro, #equipo, .printappendix { position: relative; }
 .sectionhead h2 { text-shadow: 2px 2px 0 #80543830; }
@@ -385,3 +381,7 @@ dialog[open] { animation: detail-arrive .18s ease-out both; }
 @keyframes detail-arrive { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } }
 @media (hover: none), (pointer: coarse) { .canvas.xbn-forest > .tile:hover { transform: none; } }
+@media print {
+  body #canvas .canvas.xbn-forest > button.tile { box-shadow: none !important; background-image: none !important; transition: none !important; }
+  .canvas.xbn-forest { outline: 0; }
+}

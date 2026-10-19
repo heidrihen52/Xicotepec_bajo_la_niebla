@@ -13770,7 +13770,9 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
 
   const media=matchMedia('(prefers-reduced-motion: reduce)');
   const abort=new AbortController();
-  let PIXI=null, app=null, active=null, hovered=null, focused=null, enabled=true, reduced=media.matches;
+  let PIXI=null, app=null, active=null, hovered=null, focused=null, selected=null, enabled=true, reduced=media.matches;
+  const finePointer=matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const pointerTarget={x:0,y:0}, pointerOffset={x:0,y:0};
   let fog=[], motes=[], sparks=[], resizeObserver, mutationObserver, stopped=false, lastPulse=0;
 
   function setActive(tile){
@@ -13781,6 +13783,12 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
     if(active) burst(active);
   }
   function syncActive(){setActive(focused||hovered)}
+  function selectTile(tile){
+    selected?.removeAttribute('data-forest-selected');
+    selected=tile;
+    selected?.setAttribute('data-forest-selected','true');
+    if(selected) burst(selected);
+  }
   function burst(tile){
     if(!app||!enabled||performance.now()-lastPulse<140) return;
     lastPulse=performance.now();
@@ -13791,53 +13799,85 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
     }
   }
   function resize(){
-    if(!app||stopped) return;
+    if(!app?.renderer||stopped) return;
     const rect=root.getBoundingClientRect();
-    app.renderer.resize(Math.max(1,Math.round(rect.width)),Math.max(1,Math.round(rect.height)));
+    const width=Math.max(1,Math.round(rect.width)),height=Math.max(1,Math.round(rect.height));
+    app.renderer.resize(width,height);
     drawScene();
+    fog.forEach(cloud=>{app.stage.removeChild(cloud);cloud.destroy({children:true})});
+    fog=[0,1,2].map(index=>makeFog(width,height,index));fog.forEach(cloud=>app.stage.addChild(cloud));
+    motes.forEach(mote=>{mote.x=Math.min(mote.x,width);mote.y=Math.min(mote.y,height)});
   }
   function drawScene(){
     if(!app) return;
     const width=app.renderer.width,height=app.renderer.height;
-    const mountains=app.stage.getChildByLabel('forest-mountains');
+    const far=app.stage.getChildByLabel('forest-far');
+    const ridge=app.stage.getChildByLabel('forest-ridge');
+    const town=app.stage.getChildByLabel('forest-town');
     const trees=app.stage.getChildByLabel('forest-trees');
-    mountains.clear();
-    trees.clear();
-    mountains.moveTo(0,height*.72).lineTo(width*.14,height*.49).lineTo(width*.26,height*.61).lineTo(width*.43,height*.42).lineTo(width*.59,height*.61).lineTo(width*.77,height*.39).lineTo(width*.9,height*.54).lineTo(width,height*.46).lineTo(width,height).lineTo(0,height).closePath().fill({color:0x263c31,alpha:.34});
-    for(let x=0;x<width;x+=Math.max(16,width/54)){
-      const treeY=height*(.7+Math.random()*.16), step=Math.max(12,width/54);
-      trees.rect(x,treeY,3,height-treeY).fill({color:0x152d25,alpha:.34});
-      trees.rect(x-step*.36,treeY-step*.6,step*.72,step*.46).fill({color:0x203a2d,alpha:.3});
-      trees.rect(x-step*.2,treeY-step*.86,step*.4,step*.34).fill({color:0x304a38,alpha:.25});
+    const near=app.stage.getChildByLabel('forest-near');
+    [far,ridge,town,trees,near].forEach(layer=>layer.clear());
+    far.moveTo(0,height*.62).lineTo(width*.1,height*.49).lineTo(width*.18,height*.52).lineTo(width*.31,height*.34).lineTo(width*.41,height*.5).lineTo(width*.56,height*.3).lineTo(width*.68,height*.47).lineTo(width*.82,height*.32).lineTo(width,height*.48).lineTo(width,height*.78).lineTo(0,height*.78).closePath().fill({color:0x9aab91,alpha:.16});
+    far.moveTo(0,height*.68).lineTo(width*.16,height*.55).lineTo(width*.29,height*.62).lineTo(width*.45,height*.43).lineTo(width*.58,height*.58).lineTo(width*.73,height*.41).lineTo(width*.88,height*.59).lineTo(width,height*.5).lineTo(width,height*.82).lineTo(0,height*.82).closePath().fill({color:0x55734a,alpha:.22});
+    ridge.moveTo(0,height*.76).lineTo(width*.13,height*.63).lineTo(width*.23,height*.72).lineTo(width*.37,height*.56).lineTo(width*.49,height*.71).lineTo(width*.64,height*.55).lineTo(width*.76,height*.69).lineTo(width*.91,height*.57).lineTo(width,height*.65).lineTo(width,height*.91).lineTo(0,height*.91).closePath().fill({color:0x1f493a,alpha:.46});
+    const townBase=height*.78, unit=Math.max(8,width/130);
+    for(let i=0,x=width*.14;x<width*.88;i++,x+=unit*(2.6+(i*7%4)*.28)){
+      const w=unit*(1.4+(i*3%3)*.28), h=unit*(1.15+(i*5%4)*.3), y=townBase-h;
+      town.rect(x,y,w,h).fill({color:i%3===0?0x38251c:0x805438,alpha:.22});
+      town.moveTo(x-unit*.18,y).lineTo(x+w*.5,y-unit*.38).lineTo(x+w+unit*.18,y).closePath().fill({color:0x142b27,alpha:.3});
+      town.rect(x+w*.18,y+h*.4,unit*.22,h*.6).fill({color:0xe7ad55,alpha:i%5===0?.2:.08});
+    }
+    const step=Math.max(14,width/62);
+    for(let i=0,x=0;x<width;x+=step,i++){
+      const treeY=height*(.69+((i*37)%17)/100), crown=step*(.54+(i*13%4)*.08), trunk=step*.12;
+      trees.rect(x,treeY,trunk,height-treeY).fill({color:0x142b27,alpha:.58});
+      trees.rect(x-crown*.42,treeY-step*.58,crown*.84,step*.42).fill({color:0x1f493a,alpha:.52});
+      trees.rect(x-crown*.3,treeY-step*.91,crown*.6,step*.38).fill({color:i%4===0?0x55734a:0x294b37,alpha:.48});
+      trees.rect(x-crown*.16,treeY-step*1.16,crown*.32,step*.3).fill({color:0x55734a,alpha:.38});
+    }
+    for(let i=0;i<9;i++){
+      const edge=i%2===0?0:width-step*1.4, y=height*(.84+(i%4)*.025), spread=step*(.6+(i%3)*.25);
+      near.rect(edge,y,step*1.4,step*.26).fill({color:0x142b27,alpha:.48});
+      near.rect(edge+(i%2===0?step*.42:-step*.18),y-step*.26,spread,step*.28).fill({color:0x1f493a,alpha:.42});
     }
   }
   function makeFog(width,height,index){
-    const cloud=new PIXI.Container(), art=new PIXI.Graphics(), block=Math.max(14,width/40), y=height*(.32+index*.13);
+    const cloud=new PIXI.Container(), art=new PIXI.Graphics(), block=Math.max(14,width/40), y=height*(.35+index*.12);
     for(let x=-width;x<width*2;x+=block*2){
-      const h=block*(.35+Math.random()*.5), span=block*(1.5+Math.random()*2.8), offset=(Math.random()-.5)*block*.75;
-      art.rect(x,y+offset,span,h).fill({color:index===0?0xc4d0bc:0x9cafa0,alpha:(index===0?.08:.045)+Math.random()*.025});
-      art.rect(x+block*.35,y+offset-h*.55,span*.42,Math.max(2,h*.3)).fill({color:0xd0d8c8,alpha:.035});
+      const h=block*(.3+Math.random()*.45), span=block*(1.4+Math.random()*2.6), offset=(Math.random()-.5)*block*.6;
+      art.rect(x,y+offset,span,h).fill({color:index===0?0xc4d0bc:0x9cafa0,alpha:(index===0?.07:.035)+Math.random()*.018});
+      art.rect(x+block*.3,y+offset-h*.45,span*.38,Math.max(2,h*.27)).fill({color:0xd0d8c8,alpha:.025});
     }
-    cloud.addChild(art); cloud._speed=.08+index*.06; cloud._baseY=y; cloud._index=index;
+    cloud.addChild(art); cloud._speed=.045+index*.035; cloud._baseY=y; cloud._index=index; cloud._phase=Math.random()*6.28;
     return cloud;
   }
   function update(ticker){
     if(!enabled||reduced||document.hidden) return;
     const width=app.renderer.width,height=app.renderer.height,delta=Math.min(ticker.deltaTime,2);
     const calm=root.classList.contains('xbn-forest-expanded')?.48:1;
-    const mountains=app.stage.getChildByLabel('forest-mountains');
+    const far=app.stage.getChildByLabel('forest-far');
+    const ridge=app.stage.getChildByLabel('forest-ridge');
+    const town=app.stage.getChildByLabel('forest-town');
     const trees=app.stage.getChildByLabel('forest-trees');
-    mountains.x=Math.sin(ticker.lastTime*.00008)*2;
-    trees.x=Math.sin(ticker.lastTime*.00016)*4;
-    fog.forEach((cloud,index)=>{cloud.x+=cloud._speed*delta*(active?.35:1);if(cloud.x>width*.2)cloud.x=0;cloud.y=cloud._baseY+Math.sin(ticker.lastTime*.00013+index)*2});
+    pointerOffset.x+=(pointerTarget.x-pointerOffset.x)*Math.min(.035*delta,.12);
+    pointerOffset.y+=(pointerTarget.y-pointerOffset.y)*Math.min(.035*delta,.12);
+    far.x=pointerOffset.x*-3+Math.sin(ticker.lastTime*.00004)*.8;
+    far.y=pointerOffset.y*-1;
+    ridge.x=pointerOffset.x*-6+Math.sin(ticker.lastTime*.000055)*1.2;
+    town.x=pointerOffset.x*-9;
+    trees.x=pointerOffset.x*-13+Math.sin(ticker.lastTime*.00009)*1.5;
+    fog.forEach((cloud,index)=>{cloud.x+=cloud._speed*delta*(active?.55:1)+pointerOffset.x*(index+1)*.002;if(cloud.x>width*.2)cloud.x=0;cloud.y=cloud._baseY+Math.sin(ticker.lastTime*.00008+cloud._phase)*2;cloud.alpha=.82+Math.sin(ticker.lastTime*.00012+cloud._phase)*.08});
     const rootRect=root.getBoundingClientRect();
+    let focusPoint=null;
+    if(active){const rect=active.getBoundingClientRect();focusPoint={x:rect.left-rootRect.left+rect.width/2,y:rect.top-rootRect.top+rect.height/2,radius:Math.min(width,height)*.24}}
     motes.forEach(mote=>{
       mote.phase+=.012*delta; mote.y-=mote.speed*delta*calm; mote.x+=Math.sin(mote.phase)*.16*delta;
       if(mote.y<0){mote.y=height;mote.x=Math.random()*width}
-      if(active){const rect=active.getBoundingClientRect(),dx=rect.left-rootRect.left+rect.width/2-mote.x,dy=rect.top-rootRect.top+rect.height/2-mote.y,d=Math.hypot(dx,dy),radius=Math.min(width,height)*.26;if(d<radius){const pull=.0008*(1-d/radius)*delta;mote.x+=dx*pull;mote.y+=dy*pull}}
+      if(focusPoint){const dx=focusPoint.x-mote.x,dy=focusPoint.y-mote.y,d=Math.hypot(dx,dy);if(d<focusPoint.radius){const pull=.0007*(1-d/focusPoint.radius)*delta;mote.x+=dx*pull;mote.y+=dy*pull}}
     });
     const glows=app.stage.getChildByLabel('forest-particles'); glows.clear();
-    motes.forEach(mote=>glows.rect(Math.round(mote.x),Math.round(mote.y),mote.size,mote.size).fill({color:mote.color,alpha:.18+.2*(.5+.5*Math.sin(mote.phase))+(active?.2:0)}));
+    motes.forEach(mote=>{const d=focusPoint?Math.hypot(focusPoint.x-mote.x,focusPoint.y-mote.y):Infinity,heat=focusPoint?Math.max(0,1-d/focusPoint.radius):0,glimmer=Math.max(0,Math.sin(mote.phase));glows.rect(Math.round(mote.x),Math.round(mote.y),mote.size,mote.size).fill({color:mote.color,alpha:glimmer>.16?.08+glimmer*.16+heat*.32:heat*.24})});
+    if(focusPoint){const pulse=.035+.025*(.5+.5*Math.sin(ticker.lastTime*.008));glows.rect(Math.round(focusPoint.x-16),Math.round(focusPoint.y-16),3,3).fill({color:0x238c78,alpha:pulse});glows.rect(Math.round(focusPoint.x+13),Math.round(focusPoint.y-8),2,5).fill({color:0xe7ad55,alpha:pulse});glows.rect(Math.round(focusPoint.x-8),Math.round(focusPoint.y+13),4,2).fill({color:0x238c78,alpha:pulse})}
     sparks=sparks.filter(spark=>spark.age<spark.life);
     const energy=app.stage.getChildByLabel('forest-energy'); energy.clear();
     sparks.forEach(spark=>{spark.age+=delta;spark.x+=spark.vx*delta;spark.y+=spark.vy*delta;spark.vx*=.96;spark.vy*=.96;energy.rect(Math.round(spark.x),Math.round(spark.y),2,2).fill({color:spark.color,alpha:Math.max(0,1-spark.age/spark.life)});});
@@ -13851,13 +13891,12 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
       await app.init({width:Math.max(1,Math.round(rect.width)),height:Math.max(1,Math.round(rect.height)),backgroundAlpha:0,antialias:false,autoDensity:true,resolution:Math.min(devicePixelRatio||1,1.5),preference:'webgl',powerPreference:'low-power',autoStart:false});
       if(stopped){app.destroy({removeView:true},{children:true});app=null;return}
       app.canvas.setAttribute('aria-hidden','true');app.canvas.setAttribute('role','presentation');layer.append(app.canvas);
-      const mountains=new PIXI.Graphics();mountains.label='forest-mountains';app.stage.addChild(mountains);
-      const trees=new PIXI.Graphics();trees.label='forest-trees';app.stage.addChild(trees);
+      for(const label of ['forest-far','forest-ridge','forest-town','forest-trees','forest-near']){const layer=new PIXI.Graphics();layer.label=label;app.stage.addChild(layer)}
       drawScene();
       fog=[0,1,2].map(index=>makeFog(app.renderer.width,app.renderer.height,index));fog.forEach(cloud=>app.stage.addChild(cloud));
       const glows=new PIXI.Graphics();glows.label='forest-particles';app.stage.addChild(glows);
       const energy=new PIXI.Graphics();energy.label='forest-energy';app.stage.addChild(energy);
-      const count=matchMedia('(max-width: 700px)').matches?22:38;
+      const count=matchMedia('(max-width: 700px)').matches?10:20;
       motes=Array.from({length:count},()=>({x:Math.random()*app.renderer.width,y:Math.random()*app.renderer.height,size:2+Math.floor(Math.random()*2),speed:.18+Math.random()*.42,phase:Math.random()*6.28,color:Math.random()>.55?0xb1d184:0xd3aa5c}));
       app.ticker.add(update);
       if(!reduced&&!document.hidden)app.ticker.start();
@@ -13874,12 +13913,14 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
   tiles.forEach(tile=>{
     tile.addEventListener('pointerenter',()=>{hovered=tile;syncActive()},{signal:abort.signal});
     tile.addEventListener('pointerleave',()=>{if(hovered===tile)hovered=null;syncActive()},{signal:abort.signal});
-    tile.addEventListener('click',()=>burst(tile),{signal:abort.signal});
+    tile.addEventListener('click',()=>{selectTile(tile);burst(tile)},{signal:abort.signal});
   });
   root.addEventListener('focusin',event=>{const tile=event.target.closest?.('.tile');if(tile){focused=tile;syncActive()}},{signal:abort.signal});
   root.addEventListener('focusout',event=>{const tile=event.target.closest?.('.tile');if(!tile)return;const next=event.relatedTarget?.closest?.('.tile');if(next){focused=next;syncActive();return}if(focused===tile)focused=null;syncActive()},{signal:abort.signal});
   const initiallyFocused=document.activeElement?.closest?.('.canvas .tile');
   if(initiallyFocused){focused=initiallyFocused;syncActive()}
+  root.addEventListener('pointermove',event=>{if(!finePointer||!enabled)return;const rect=root.getBoundingClientRect();pointerTarget.x=((event.clientX-rect.left)/rect.width-.5)*2;pointerTarget.y=((event.clientY-rect.top)/rect.height-.5)*2},{signal:abort.signal,passive:true});
+  root.addEventListener('pointerleave',()=>{pointerTarget.x=0;pointerTarget.y=0},{signal:abort.signal,passive:true});
   toggle.addEventListener('click',()=>setEnabled(!enabled),{signal:abort.signal});
   document.addEventListener('visibilitychange',()=>{if(!app)return;if(document.hidden||!enabled||reduced)app.ticker.stop();else app.ticker.start()},{signal:abort.signal});
   media.addEventListener?.('change',event=>{reduced=event.matches;if(!app)return;if(reduced||document.hidden||!enabled)app.ticker.stop();else app.ticker.start()},{signal:abort.signal});
@@ -13895,7 +13936,7 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
 (() => {
   const stylesheet = document.createElement('link');
   stylesheet.rel = 'stylesheet';
-  stylesheet.href = new URL('./redesign.css', document.baseURI).href;
+  stylesheet.href = new URL('./redesign.css?v=4', document.baseURI).href;
   document.head.append(stylesheet);
 
   const brand = document.querySelector('nav .brand');
