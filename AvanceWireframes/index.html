@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Avance de wireframes para Xicotepec bajo la niebla: aplicación móvil, PWA y videojuego.">
+  <meta name="theme-color" content="#f3f3f1">
+  <title>Avance de wireframes · Xicotepec bajo la niebla</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", sans-serif;
+      color: #20201f;
+      background: #f3f3f1;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --ink: #20201f;
+      --muted: #666662;
+      --line: #b8b8b2;
+      --soft-line: #d8d8d3;
+      --paper: #fff;
+      --wash: #ededeb;
+      --shade: #d4d4cf;
+    }
+
+    * { box-sizing: border-box; }
+    body { min-width: 320px; margin: 0; }
+    button { color: inherit; font: inherit; }
+    button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      padding: 14px max(24px, calc((100vw - 1440px) / 2));
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+      font-size: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .brand-mark { display: grid; width: 28px; aspect-ratio: 1; place-items: center; border: 1px solid var(--ink); font-size: 11px; }
+    .top-meta { color: var(--muted); text-align: right; }
+
+    main { max-width: 1440px; margin: 0 auto; padding: 34px 28px 52px; }
+    .intro { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 24px; }
+    .eyebrow { margin: 0 0 8px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(26px, 3vw, 38px); line-height: 1.15; font-weight: 650; }
+    .intro p:last-child { max-width: 680px; margin: 10px 0 0; color: #50504c; font-size: 14px; line-height: 1.55; }
+    .progress-tag { flex: none; padding: 7px 10px; border: 1px solid var(--line); background: var(--paper); color: var(--muted); font-size: 11px; }
+
+    .app-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--ink); }
+    .app-tab { min-height: 44px; padding: 0 17px; border: 1px solid transparent; border-bottom: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; }
+    .app-tab[aria-selected="true"] { position: relative; top: 1px; border-color: var(--ink); background: var(--paper); color: var(--ink); font-weight: 700; }
+
+    .app-summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 0; }
+    .app-summary h2 { margin: 0; font-size: 16px; font-weight: 650; }
+    .app-summary p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .screen-count { white-space: nowrap; color: var(--muted); font-size: 12px; }
+
+    .workspace { display: grid; grid-template-columns: 235px minmax(360px, 1fr) 225px; min-height: 690px; border: 1px solid var(--line); background: var(--paper); }
+    .screen-list { padding: 15px 10px; border-right: 1px solid var(--line); background: #f8f8f6; }
+    .list-label, .panel-label { margin: 0 8px 10px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+    .screen-buttons { display: grid; gap: 3px; }
+    .screen-button { display: grid; grid-template-columns: 39px 1fr; align-items: center; gap: 9px; width: 100%; padding: 8px; border: 1px solid transparent; background: transparent; text-align: left; cursor: pointer; }
+    .screen-button:hover { background: var(--wash); }
+    .screen-button[aria-current="true"] { border-color: var(--line); background: var(--paper); }
+    .screen-id { color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+    .screen-name { font-size: 12px; line-height: 1.3; }
+
+    .stage { display: flex; min-width: 0; flex-direction: column; align-items: center; padding: 19px 22px 16px; background-color: #f0f0ee; background-image: linear-gradient(var(--soft-line) 1px, transparent 1px), linear-gradient(90deg, var(--soft-line) 1px, transparent 1px); background-size: 20px 20px; }
+    .stage-head { display: flex; width: 100%; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 13px; padding: 0 2px; }
+    .stage-head strong { font-size: 12px; font-weight: 650; }
+    .stage-head span { color: var(--muted); font-size: 10px; }
+    .canvas-wrap { display: grid; width: 100%; min-height: 555px; flex: 1; place-items: center; overflow: auto; padding: 12px; }
+    .device { position: relative; display: flex; width: min(100%, 320px); min-height: 590px; flex-direction: column; overflow: hidden; border: 2px solid #555550; border-radius: 20px; background: var(--paper); box-shadow: 5px 5px 0 #0000000b; }
+    .device.browser, .device.game { width: min(100%, 760px); min-height: 440px; border-radius: 3px; }
+    .device.game { min-height: 430px; }
+    .device-top { display: flex; min-height: 31px; align-items: center; justify-content: space-between; gap: 10px; padding: 0 12px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 9px; }
+    .device.browser .device-top { justify-content: flex-start; background: #f4f4f2; }
+    .device-content { display: flex; min-height: 0; flex: 1; flex-direction: column; padding: 18px 17px; }
+    .device.browser .device-content { padding: 16px 21px; }
+    .device.game .device-content { padding: 0; }
+    .app-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: -18px -17px 15px; padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 11px; font-weight: 650; }
+    .placeholder { display: grid; min-height: 100px; place-items: center; border: 1px dashed #92928c; background: repeating-linear-gradient(135deg, #f5f5f3 0 8px, #ededeb 8px 9px); color: #666661; text-align: center; font-size: 10px; }
+    .placeholder.small { min-height: 66px; }
+    .placeholder.avatar { width: 74px; min-height: 74px; border-radius: 50%; }
+    .placeholder.wide { min-height: 150px; }
+    .wire-title { margin: 2px 0 8px; font-size: 18px; line-height: 1.25; font-weight: 650; }
+    .wire-copy { margin: 0 0 13px; color: #62625d; font-size: 10px; line-height: 1.5; }
+    .wire-button { display: grid; min-height: 34px; place-items: center; margin-top: 8px; border: 1px solid #777771; background: #f4f4f2; font-size: 10px; text-align: center; }
+    .wire-button.primary { border: 2px solid #44443f; background: #e5e5e2; font-weight: 700; }
+    .wire-input { display: grid; gap: 5px; margin: 6px 0; color: #555550; font-size: 9px; }
+    .wire-input span:last-child { min-height: 30px; padding: 7px; border: 1px solid #b8b8b2; background: var(--paper); color: #8a8a84; }
+    .wire-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .wire-row.three { grid-template-columns: repeat(3, 1fr); }
+    .wire-card { display: grid; gap: 5px; padding: 8px; border: 1px solid #b8b8b2; background: #fafaf9; font-size: 9px; }
+    .wire-card b { font-size: 10px; }
+    .wire-list { display: grid; gap: 7px; margin: 7px 0; }
+    .wire-list-item { display: grid; grid-template-columns: 54px 1fr; gap: 9px; align-items: center; padding: 7px; border: 1px solid #c7c7c2; background: #fafaf9; font-size: 9px; }
+    .wire-list-item .placeholder { min-height: 44px; }
+    .wire-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin: auto -17px -18px; padding: 8px 4px 10px; border-top: 1px solid var(--line); background: #f7f7f5; text-align: center; }
+    .wire-nav span { display: grid; gap: 4px; justify-items: center; color: #666661; font-size: 8px; }
+    .wire-nav i { width: 13px; height: 11px; border: 1px solid #777771; }
+    .browser-nav { display: flex; flex-wrap: wrap; gap: 14px; margin: -3px 0 15px; padding: 9px 0; border-bottom: 1px solid var(--line); color: #555550; font-size: 9px; }
+    .stat { padding: 9px 6px; border: 1px solid #b8b8b2; background: #fafaf9; text-align: center; }
+    .stat b { display: block; font-size: 15px; }
+    .stat span { font-size: 8px; color: var(--muted); }
+    .chart { display: flex; height: 116px; align-items: end; justify-content: space-around; gap: 13px; margin: 12px 0; padding: 8px; border: 1px solid #c7c7c2; background: repeating-linear-gradient(to bottom, transparent 0 25px, #e5e5e2 25px 26px); }
+    .chart i { width: 24px; border: 1px solid #73736d; background: #d7d7d2; }
+    .chart-labels { display: flex; justify-content: space-around; color: var(--muted); font-size: 8px; }
+    .game-screen { position: relative; display: grid; min-height: 345px; flex: 1; grid-template-rows: auto 1fr auto; overflow: hidden; padding: 13px; background: repeating-linear-gradient(0deg, #f2f2f0 0 28px, #e8e8e5 28px 29px); }
+    .game-hud { display: flex; justify-content: space-between; gap: 10px; font-size: 9px; }
+    .hud-bar { width: 72px; height: 8px; display: inline-block; border: 1px solid #666; background: linear-gradient(90deg, #aaa 70%, white 70%); vertical-align: middle; }
+    .game-world { position: relative; display: flex; align-items: end; justify-content: space-around; padding: 15px 6px 28px; border-bottom: 3px solid #555550; }
+    .game-platform { position: absolute; width: 34%; height: 9px; border: 1px solid #777; background: #d8d8d4; }
+    .game-platform.one { left: 14%; bottom: 45%; }
+    .game-platform.two { right: 10%; bottom: 64%; width: 24%; }
+    .game-actor { z-index: 1; display: grid; width: 42px; height: 64px; place-items: center; border: 1px solid #555550; background: #f9f9f8; font-size: 9px; }
+    .game-obstacle { z-index: 1; width: 48px; height: 35px; border: 1px dashed #555550; background: #dededb; font-size: 8px; text-align: center; }
+    .game-footer { display: flex; justify-content: space-between; gap: 10px; padding-top: 9px; font-size: 9px; }
+    .stage-controls { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 2px 0; }
+    .stage-controls button { min-height: 31px; padding: 5px 10px; border: 1px solid var(--line); background: var(--paper); cursor: pointer; font-size: 10px; }
+    .stage-controls button:disabled { color: #999; cursor: default; }
+    .stage-controls .stepper { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 10px; }
+
+    .details { padding: 17px 14px; border-left: 1px solid var(--line); }
+    .details h3 { margin: 0 8px 16px; font-size: 13px; }
+    .detail-block { margin: 0 8px 17px; }
+    .detail-block h4 { margin: 0 0 6px; color: var(--muted); font-size: 9px; letter-spacing: .05em; text-transform: uppercase; }
+    .detail-block p { margin: 0; color: #50504c; font-size: 11px; line-height: 1.5; }
+    .component-list { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+    .component-list li { display: flex; gap: 7px; color: #50504c; font-size: 10px; line-height: 1.4; }
+    .component-list li::before { content: ""; width: 8px; height: 8px; flex: none; margin-top: 3px; border: 1px solid #777771; }
+    .wireframe-note { padding: 10px; border: 1px dashed var(--line); color: var(--muted); font-size: 10px; line-height: 1.45; }
+
+    @media (max-width: 1040px) {
+      main { padding-inline: 20px; }
+      .workspace { grid-template-columns: 205px minmax(320px, 1fr); }
+      .details { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; border-top: 1px solid var(--line); border-left: 0; }
+      .details h3 { grid-column: 1 / -1; margin-bottom: 0; }
+      .detail-block { margin-bottom: 4px; }
+      .wireframe-note { align-self: start; }
+    }
+    @media (max-width: 680px) {
+      .topbar { padding: 12px 16px; }
+      .top-meta { max-width: 130px; }
+      main { padding: 25px 12px 35px; }
+      .intro { align-items: start; flex-direction: column; gap: 14px; }
+      .app-tabs { overflow-x: auto; }
+      .app-tab { flex: 1; min-width: max-content; padding-inline: 11px; font-size: 11px; }
+      .app-summary { align-items: start; }
+      .workspace { grid-template-columns: 1fr; }
+      .screen-list { border-right: 0; border-bottom: 1px solid var(--line); }
+      .screen-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .screen-button { grid-template-columns: 34px 1fr; }
+      .stage { padding: 14px 9px 11px; }
+      .canvas-wrap { min-height: 540px; padding: 8px 2px; }
+      .device { width: min(100%, 310px); }
+      .device.browser, .device.game { width: 100%; }
+      .device.browser .device-content { padding-inline: 13px; }
+      .details { grid-template-columns: 1fr 1fr; padding: 14px 8px; }
+      .details h3 { grid-column: 1 / -1; }
+      .detail-block { margin-inline: 6px; }
+      .wireframe-note { grid-column: 1 / -1; }
+    }
+    @media (max-width: 390px) {
+      .screen-buttons { grid-template-columns: 1fr; }
+      .stage-head span { max-width: 105px; text-align: right; }
+      .stage-controls button { padding-inline: 7px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">XBN</span><span>Xicotepec bajo la niebla</span></div>
+    <div class="top-meta">Proyecto integrador · Diseño de interfaces</div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Avance de diseño · baja fidelidad</p>
+        <h1 id="page-title">Wireframes</h1>
+        <p>Estructura inicial de las pantallas para la app Flutter, la PWA cultural y el videojuego. Los bloques grises representan contenido provisional; la prioridad es revisar jerarquía, navegación y distribución.</p>
+      </div>
+      <span class="progress-tag">31 pantallas · 3 plataformas</span>
+    </section>
+
+    <div class="app-tabs" role="tablist" aria-label="Plataformas">
+      <button class="app-tab" type="button" role="tab" id="tab-flutter" aria-selected="true" data-app="flutter">App Flutter</button>
+      <button class="app-tab" type="button" role="tab" id="tab-pwa" aria-selected="false" data-app="pwa" tabindex="-1">PWA cultural</button>
+      <button class="app-tab" type="button" role="tab" id="tab-unity" aria-selected="false" data-app="unity" tabindex="-1">Videojuego Unity</button>
+    </div>
+
+    <section class="app-summary" aria-live="polite">
+      <div><h2 id="app-title">App Flutter</h2><p id="app-description"></p></div>
+      <span class="screen-count" id="screen-count"></span>
+    </section>
+
+    <section class="workspace" aria-label="Explorador de wireframes">
+      <nav class="screen-list" aria-label="Pantallas de la aplicación">
+        <p class="list-label">Recorrido</p>
+        <div class="screen-buttons" id="screen-buttons"></div>
+      </nav>
+
+      <section class="stage" aria-label="Vista previa del wireframe">
+        <div class="stage-head"><strong id="stage-title"></strong><span id="stage-id"></span></div>
+        <div class="canvas-wrap" id="canvas-wrap"></div>
+        <div class="stage-controls">
+          <button type="button" id="previous-screen">Anterior</button>
+          <span class="stepper" id="stepper" aria-live="polite"></span>
+          <button type="button" id="next-screen">Siguiente</button>
+        </div>
+      </section>
+
+      <aside class="details" aria-label="Notas de la pantalla">
+        <h3>Estructura</h3>
+        <div class="detail-block"><h4>Objetivo</h4><p id="screen-purpose"></p></div>
+        <div class="detail-block"><h4>Componentes</h4><ul class="component-list" id="screen-components"></ul></div>
+        <p class="wireframe-note">Boceto funcional, no diseño visual final. Textos, imágenes y datos se reemplazarán durante la siguiente etapa.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const apps = {
+      flutter: {
+        title: "App Flutter",
+        description: "Seguimiento personal: historial, estadísticas, logros y cuenta.",
+        screens: [
+          ["FL01", "Splash de empresa", "splash", "Presentar Lumbre Studio al abrir la aplicación.", "Marca del estudio", "Acceso a la app"],
+          ["FL10", "Progreso y carga", "progress", "Preparar la aplicación antes de mostrar el contenido.", "Marca del proyecto", "Barra de progreso", "Estado de carga"],
+          ["FL02", "Iniciar sesión", "login", "Acceder a las consultas personales.", "Correo", "Contraseña", "Entrar", "Crear cuenta"],
+          ["FL03", "Crear cuenta", "signup", "Registrar una cuenta compartida entre aplicaciones.", "Alias", "Correo", "Contraseña", "Confirmación"],
+          ["FL04", "Inicio", "home", "Ver el resumen personal y la última partida.", "Resumen de actividad", "Última partida", "Acceso a logros", "Barra inferior"],
+          ["FL05", "Historial", "list", "Consultar partidas y filtrar por nivel.", "Filtro por nivel", "Lista de partidas", "Fecha y puntuación", "Actualizar"],
+          ["FL06", "Detalle de partida", "detail", "Examinar el resultado y el uso de personajes.", "Nivel y resultado", "Duración y puntos", "Uso por personaje", "Volver"],
+          ["FL07", "Estadísticas", "stats", "Comparar uso de personajes y progreso.", "Resumen de partidas", "Gráfica de uso", "Progreso por nivel"],
+          ["FL08", "Mis logros", "achievements", "Distinguir logros obtenidos y pendientes.", "Estado del logro", "Condición", "Progreso"],
+          ["FL09", "Perfil y ajustes", "profile", "Consultar cuenta, conexión y sincronización.", "Alias", "Estado de conexión", "Última sincronización", "Cerrar sesión"]
+        ]
+      },
+      pwa: {
+        title: "PWA cultural",
+        description: "Exploración cultural, personajes y ranking público.",
+        screens: [
+          ["PW00", "Splash de empresa", "splash", "Presentar Lumbre Studio al abrir la PWA.", "Marca del estudio", "Acceso al sitio"],
+          ["PW09", "Progreso y carga", "progress", "Preparar el contenido público.", "Marca del proyecto", "Progreso", "Estado de carga"],
+          ["PW01", "Inicio", "landing", "Introducir el proyecto y abrir la exploración.", "Presentación", "Explorar lugares", "Ver ranking", "Navegación"],
+          ["PW02", "Explorar lugares", "list", "Elegir una ficha de lugar.", "UTXJ", "Centro", "Cruz Celestial", "La Xochipila"],
+          ["PW03", "Ficha cultural", "detail", "Separar información cultural de ficción.", "Imagen de referencia", "Sobre el lugar", "En el videojuego", "Fuentes"],
+          ["PW04", "Guía de personajes", "people", "Comparar a Balam, Rayo y Kiro.", "Siluetas", "Habilidades", "Abrir ficha"],
+          ["PW05", "Ficha de personaje", "detail", "Explicar habilidad, límite y ejemplo de uso.", "Personaje", "Habilidad", "Limitación", "Ejemplo"],
+          ["PW06", "Ranking", "ranking", "Consultar puntuaciones públicas.", "Filtro por nivel", "Posición", "Alias", "Puntos"],
+          ["PW07", "Acceso a la cuenta", "login", "Acceder a la posición y los logros personales.", "Correo", "Contraseña", "Entrar", "Crear cuenta"],
+          ["PW08", "Mi posición y logros", "position", "Ver posición y logros de la cuenta.", "Alias", "Puesto", "Puntos", "Logros"]
+        ]
+      },
+      unity: {
+        title: "Videojuego Unity",
+        description: "Acción y plataformas: tutorial UTXJ y cambio de personaje durante la partida.",
+        screens: [
+          ["VG00", "Splash de empresa", "splash", "Presentar Lumbre Studio antes de iniciar el juego.", "Marca del estudio", "Continuar"],
+          ["VG10", "Progreso y carga", "progress", "Preparar el videojuego antes de su presentación.", "Marca del proyecto", "Barra de carga", "Porcentaje"],
+          ["VG01", "Presentación", "game-title", "Introducir el título y el tono ficticio del juego.", "Título", "Siluetas", "Comenzar"],
+          ["VG02", "Menú principal", "game-menu", "Abrir el tutorial, reanudar o configurar el juego.", "Nueva partida", "Continuar", "Cuenta", "Opciones"],
+          ["VG03", "Cuenta", "login", "Ensayar el acceso y revisar sincronización.", "Correo", "Contraseña", "Estado de conexión", "Volver"],
+          ["VG04", "Opciones", "options", "Ajustar controles, volumen y visualización.", "Volumen", "Controles", "Visualización", "Volver"],
+          ["VG05", "Introducción", "game-story", "Presentar la amenaza ficticia sobre el campus.", "Viñeta", "Diálogo", "Continuar", "Omitir"],
+          ["VG06", "Tutorial UTXJ", "gameplay", "Combinar habilidades en una escena de plataformas.", "Campus", "Personaje activo", "Obstáculos", "Objetivo", "HUD"],
+          ["VG07", "Pausa", "pause", "Pausar sin perder el estado de la escena.", "Reanudar", "Opciones", "Volver al menú"],
+          ["VG08", "Derrota", "result", "Reintentar desde el último punto de control.", "Estado de partida", "Reintentar", "Volver al menú"],
+          ["VG09", "Resumen de partida", "result", "Revisar el resultado y su sincronización.", "Nivel", "Duración", "Puntos", "Personajes", "Sincronización"]
+        ]
+      }
+    };
+
+    const commonNav = `<div class="wire-nav" aria-label="Navegación principal"><span><i></i>Inicio</span><span><i></i>Historial</span><span><i></i>Estadísticas</span><span><i></i>Perfil</span></div>`;
+    let currentApp = "flutter";
+    let currentIndex = 0;
+
+    function placeholder(label, size = "") {
+      return `<div class="placeholder ${size}">${label}</div>`;
+    }
+
+    function button(label, primary = false) {
+      return `<div class="wire-button${primary ? " primary" : ""}">${label}</div>`;
+    }
+
+    function listItems(labels) {
+      return `<div class="wire-list">${labels.map((label, index) => `<div class="wire-list-item">${placeholder(`Vista ${index + 1}`, "small")}<span><b>${label}</b><br>Descripción breve<br>Ver detalle →</span></div>`).join("")}</div>`;
+    }
+
+    function contentFor(screen, appKey) {
+      const kind = screen[2];
+      const title = screen[1];
+      const copy = `<p class="wire-copy">Contenido de ejemplo para revisar la jerarquía y el espacio disponible.</p>`;
+      if (kind === "login" || kind === "signup") {
+        const fields = kind === "signup" ? ["Alias", "Correo electrónico", "Contraseña", "Confirmar contraseña"] : ["Correo electrónico", "Contraseña"];
+        return `${placeholder("Marca / identificador", "small")}<h2 class="wire-title">${title}</h2>${copy}${fields.map((field) => `<label class="wire-input"><span>${field}</span><span>Escribe aquí</span></label>`).join("")}${button(kind === "signup" ? "Crear cuenta" : "Entrar", true)}${button(kind === "signup" ? "Volver al acceso" : "Crear cuenta")}`;
+      }
+      if (kind === "home" || kind === "landing") {
+        return `${kind === "landing" ? placeholder("Imagen / paisaje", "wide") : `<div class="wire-row"><div class="stat"><b>08</b><span>PARTIDAS</span></div><div class="stat"><b>64 min</b><span>TIEMPO TOTAL</span></div></div>`}<h2 class="wire-title">${kind === "landing" ? "Explora Xicotepec" : "Hola, NieblaDemo"}</h2>${copy}${kind === "landing" ? `${button("Explorar lugares", true)}${button("Ver ranking")}` : `${placeholder("Resumen de última partida", "small")}${button("Mis logros")}`}`;
+      }
+      if (kind === "list") {
+        const labels = screen[0] === "FL05" ? ["Tutorial UTXJ · 1.250 pts", "Tutorial UTXJ · 980 pts", "Ver más partidas"] : ["UTXJ · Campus", "Centro de Xicotepec", "Cruz Celestial", "La Xochipila"];
+        return `<h2 class="wire-title">${title}</h2>${screen[0] === "FL05" ? button("Filtrar por nivel") : ""}${listItems(labels)}`;
+      }
+      if (kind === "detail") {
+        return `${placeholder(screen[0] === "PW05" ? "Retrato del personaje" : "Imagen del lugar / partida", "wide")}<h2 class="wire-title">${title}</h2>${copy}<div class="wire-card"><b>Información principal</b><span>Descripción pendiente de contenido final.</span></div><div class="wire-card"><b>Contexto / detalle</b><span>Información complementaria y referencias.</span></div>${button("Volver", true)}`;
+      }
+      if (kind === "stats") {
+        return `<h2 class="wire-title">${title}</h2><div class="wire-row three"><div class="stat"><b>08</b><span>PARTIDAS</span></div><div class="stat"><b>1.250</b><span>PUNTOS</span></div><div class="stat"><b>08:00</b><span>TIEMPO</span></div></div><div class="chart"><i style="height:76%"></i><i style="height:58%"></i><i style="height:44%"></i></div><div class="chart-labels"><span>Balam</span><span>Rayo</span><span>Kiro</span></div>${placeholder("Progreso por nivel", "small")}`;
+      }
+      if (kind === "achievements") {
+        return `<h2 class="wire-title">${title}</h2>${["Primera partida", "Tres habilidades", "Tutorial completado"].map((label) => `<div class="wire-list-item">${placeholder("Logro", "small")}<span><b>${label}</b><br>Condición de desbloqueo<br>Estado: pendiente</span></div>`).join("")}`;
+      }
+      if (kind === "profile" || kind === "position") {
+        return `<div class="wire-row"><div>${placeholder("Avatar", "avatar")}</div><div><h2 class="wire-title">${kind === "profile" ? "NieblaDemo" : "Mi posición"}</h2><p class="wire-copy">Cuenta de demostración</p></div></div><div class="wire-list-item"><span>Cuenta</span><b>Estado y sincronización</b></div><div class="wire-list-item"><span>Progreso</span><b>Partidas · logros</b></div>${button(kind === "profile" ? "Cerrar sesión" : "Ver historial en Flutter")}`;
+      }
+      if (kind === "people") {
+        return `<h2 class="wire-title">${title}</h2>${["Balam · Fuerza", "Rayo · Agilidad", "Kiro · Tecnología"].map((label) => `<div class="wire-list-item">${placeholder("Silueta", "small")}<span><b>${label}</b><br>Habilidad principal<br>Ver ficha →</span></div>`).join("")}`;
+      }
+      if (kind === "ranking") {
+        return `<h2 class="wire-title">${title}</h2>${button("Filtrar por nivel")}${["01 · NieblaDemo · 1.250", "02 · Jugador02 · 1.180", "03 · Jugador03 · 940", "04 · Jugador04 · 820"].map((label) => `<div class="wire-list-item"><span>POS.</span><b>${label}</b></div>`).join("")}${button("Ver mi posición")}`;
+      }
+      if (kind === "progress") {
+        return `<div style="display:grid;min-height:500px;align-content:center;gap:18px;text-align:center">${placeholder("Logotipo", "wide")}<h2 class="wire-title">${title}</h2><div class="placeholder small">Progreso / indicador</div><p class="wire-copy">Preparando la siguiente pantalla</p>${button("Continuar")}</div>`;
+      }
+      if (kind === "splash") {
+        return `<div style="display:grid;min-height:500px;align-content:center;gap:18px;text-align:center">${placeholder("Logotipo de Lumbre Studio", "wide")}<p class="wire-copy">Identidad del estudio</p></div>`;
+      }
+      if (kind === "game-title" || kind === "game-story") {
+        return `<div style="display:grid;gap:13px;max-width:520px;margin:auto;text-align:center">${placeholder(kind === "game-title" ? "Escena / siluetas" : "Viñeta de introducción", "wide")}<h2 class="wire-title">${kind === "game-title" ? "Xicotepec bajo la niebla" : "La niebla cubre el campus"}</h2><p class="wire-copy">${kind === "game-title" ? "Tres personajes · aventura de plataformas" : "Texto narrativo provisional. La historia y la magia son ficción."}</p>${button(kind === "game-title" ? "Comenzar" : "Continuar", true)}</div>`;
+      }
+      if (kind === "game-menu") {
+        return `<div style="display:grid;gap:10px;width:min(100%,350px);margin:auto;text-align:center">${placeholder("Fondo / escena", "small")}<h2 class="wire-title">Menú principal</h2>${button("Nueva partida", true)}${button("Continuar")}${button("Cuenta")}${button("Opciones")}</div>`;
+      }
+      if (kind === "options") {
+        return `<h2 class="wire-title">${title}</h2>${["Volumen general", "Música", "Efectos", "Controles", "Pantalla"].map((label) => `<div class="wire-list-item"><span>${label}</span><b>────────── ◇</b></div>`).join("")}${button("Guardar cambios", true)}${button("Volver")}`;
+      }
+      if (kind === "pause") {
+        return `<div class="game-screen"><div class="game-hud"><span>ESCENARIO EN PAUSA</span><span>UTXJ</span></div><div class="game-world">${placeholder("ESCENA DETRÁS DEL MENÚ", "wide")}</div><div style="display:grid;gap:8px;width:min(100%,260px);margin:14px auto">${button("Reanudar", true)}${button("Opciones")}${button("Volver al menú")}</div></div>`;
+      }
+      if (kind === "gameplay") {
+        return `<div class="game-screen"><div class="game-hud"><span>VIDA <i class="hud-bar"></i> RESISTENCIA <i class="hud-bar"></i></span><span>PERSONAJE: BALAM · 1 / 2 / 3</span></div><div class="game-world"><div class="game-platform one"></div><div class="game-platform two"></div><div class="game-actor">BALAM</div><div class="game-obstacle">BARRERA</div><div class="game-obstacle" style="height:24px">PANEL</div></div><div class="game-footer"><span>OBJETIVO: despeja el camino y activa el panel</span><span>ESC · PAUSA</span></div></div>`;
+      }
+      if (kind === "result") {
+        return `<div style="display:grid;gap:12px;max-width:460px;margin:auto"><h2 class="wire-title">${title}</h2>${placeholder("Estado / ilustración", "small")}<div class="wire-row"><div class="stat"><b>1.250</b><span>PUNTOS</span></div><div class="stat"><b>08:00</b><span>DURACIÓN</span></div></div>${listItems(screen[0] === "VG09" ? ["Balam · 03:00", "Rayo · 02:30", "Kiro · 02:30"] : ["Punto de control disponible", "Reintento desde el inicio"])}${button(screen[0] === "VG09" ? "Sincronización pendiente" : "Reintentar", true)}${button("Volver al menú")}</div>`;
+      }
+      return `<h2 class="wire-title">${title}</h2>${copy}${placeholder("Contenido esquemático", "wide")}`;
+    }
+
+    function render() {
+      const app = apps[currentApp];
+      const screen = app.screens[currentIndex];
+      const isUnity = currentApp === "unity";
+      const isBrowser = currentApp === "pwa";
+      document.getElementById("app-title").textContent = app.title;
+      document.getElementById("app-description").textContent = app.description;
+      document.getElementById("screen-count").textContent = `${app.screens.length} pantallas`;
+      document.getElementById("stage-title").textContent = screen[1];
+      document.getElementById("stage-id").textContent = `${screen[0]} · wireframe`;
+      document.getElementById("screen-purpose").textContent = screen[3];
+      document.getElementById("stepper").textContent = `${currentIndex + 1} / ${app.screens.length}`;
+      document.getElementById("previous-screen").disabled = currentIndex === 0;
+      document.getElementById("next-screen").disabled = currentIndex === app.screens.length - 1;
+
+      document.getElementById("screen-buttons").innerHTML = app.screens.map((item, index) => `<button type="button" class="screen-button" data-index="${index}" aria-current="${index === currentIndex}"><span class="screen-id">${item[0]}</span><span class="screen-name">${item[1]}</span></button>`).join("");
+      document.getElementById("screen-components").innerHTML = screen.slice(4).map((item) => `<li>${item}</li>`).join("");
+      const deviceClass = isUnity ? "game" : isBrowser ? "browser" : "phone";
+      const top = isUnity ? `<div class="device-top"><span>Unity · pantalla de juego</span><span>Prototipo visual</span></div>` : isBrowser ? `<div class="device-top"><span>◉ &nbsp;◉ &nbsp;◉</span><span>xicotepec.demo</span></div>` : `<div class="device-top"><span>9:41</span><span>◖ ▰</span></div>`;
+      const webNav = isBrowser ? `<nav class="browser-nav" aria-label="Navegación del sitio"><span>Inicio</span><span>Lugares</span><span>Personajes</span><span>Ranking</span><span>Acceso</span></nav>` : "";
+      const appBar = currentApp === "flutter" && !["FL01", "FL10", "FL02", "FL03"].includes(screen[0]) ? `<div class="app-bar"><span>‹</span><span>${screen[1]}</span><span>···</span></div>` : "";
+      const bottomNav = currentApp === "flutter" && ["FL04", "FL05", "FL07", "FL09"].includes(screen[0]) ? commonNav : "";
+      document.getElementById("canvas-wrap").innerHTML = `<div class="device ${deviceClass}">${top}<div class="device-content">${webNav}${appBar}${contentFor(screen, currentApp)}${bottomNav}</div></div>`;
+      document.querySelectorAll(".screen-button").forEach((button) => button.addEventListener("click", () => { currentIndex = Number(button.dataset.index); render(); }));
+    }
+
+    document.querySelectorAll(".app-tab").forEach((tab) => tab.addEventListener("click", () => {
+      currentApp = tab.dataset.app;
+      currentIndex = 0;
+      document.querySelectorAll(".app-tab").forEach((item) => {
+        const selected = item === tab;
+        item.setAttribute("aria-selected", String(selected));
+        item.tabIndex = selected ? 0 : -1;
+      });
+      render();
+    }));
+    document.getElementById("previous-screen").addEventListener("click", () => { currentIndex = Math.max(0, currentIndex - 1); render(); });
+    document.getElementById("next-screen").addEventListener("click", () => { currentIndex = Math.min(apps[currentApp].screens.length - 1, currentIndex + 1); render(); });
+    document.querySelector(".app-tabs").addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+      event.preventDefault();
+      const tabs = [...document.querySelectorAll(".app-tab")];
+      const index = tabs.indexOf(document.activeElement);
+      tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length].click();
+      tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length].focus();
+    });
+    render();
+  </script>
+</body>
+</html>
