@@ -13737,4 +13737,158 @@ const frame=document.querySelector('#archifyFrame');
 function connectArchify(){try{const doc=frame.contentDocument;if(!doc)return;doc.querySelectorAll('[data-node-id]').forEach(node=>{const id=node.getAttribute('data-node-id');const m=/^etapa(\d+)$/.exec(id);if(!m)return;const open=()=>{lastTrigger=document.querySelector('[data-evolution="'+(Number(m[1])-1)+'"]');openEvolution(Number(m[1])-1)};node.addEventListener('click',event=>{event.stopPropagation();open()},true);node.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();open()}},true)})}catch(error){/* Las diez etapas siguen disponibles mediante sus botones accesibles. */}}
 frame.addEventListener('load',connectArchify);
 if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))connectArchify();
+</script>
+<style>
+  .canvas.xbn-forest{position:relative;isolation:isolate;overflow:hidden;background-color:#19352c}
+  .xbn-forest__layer{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,rgba(161,183,161,.12),transparent 34%,rgba(21,45,36,.18)),repeating-linear-gradient(0deg,transparent 0 7px,rgba(174,196,173,.025) 7px 8px)}
+  .xbn-forest__layer canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+  .canvas.xbn-forest>.tile{position:relative;z-index:1}
+  .canvas.xbn-forest>.tile[data-forest-active="true"]{outline:2px solid rgba(158,201,156,.85);outline-offset:2px;box-shadow:0 0 0 5px rgba(115,166,126,.12),0 8px 24px rgba(24,63,47,.16)}
+  .canvas.xbn-forest.xbn-forest-off{background-color:transparent}
+  .canvas.xbn-forest.xbn-forest-off .xbn-forest__layer{display:none}
+  .canvas.xbn-forest.xbn-forest-fallback .xbn-forest__layer{background:linear-gradient(180deg,rgba(161,183,161,.15),transparent 35%,rgba(21,45,36,.26)),repeating-linear-gradient(0deg,transparent 0 7px,rgba(174,196,173,.04) 7px 8px),repeating-linear-gradient(90deg,transparent 0 47px,rgba(124,155,124,.08) 47px 49px)}
+  @media print{.xbn-forest__layer,#xbn-forest-toggle{display:none!important}.canvas.xbn-forest{overflow:visible}}
+</style>
+<script type="module">
+(() => {
+  const root=document.querySelector('.canvas');
+  if(!root||window.__xbnForest) return;
+  const tiles=[...root.querySelectorAll('.tile')];
+  if(!tiles.length) return;
+  const layer=document.createElement('div');
+  layer.className='xbn-forest__layer';
+  layer.setAttribute('aria-hidden','true');
+  root.classList.add('xbn-forest');
+  root.prepend(layer);
+  const toggle=document.createElement('button');
+  toggle.id='xbn-forest-toggle';
+  toggle.type='button';
+  toggle.textContent='Ambiente: activo';
+  toggle.setAttribute('aria-pressed','true');
+  toggle.setAttribute('aria-label','Desactivar efectos ambientales');
+  document.querySelector('.navtools')?.append(toggle);
+
+  const media=matchMedia('(prefers-reduced-motion: reduce)');
+  const abort=new AbortController();
+  let PIXI=null, app=null, active=null, hovered=null, focused=null, enabled=true, reduced=media.matches;
+  let fog=[], motes=[], sparks=[], resizeObserver, mutationObserver, stopped=false, lastPulse=0;
+
+  function setActive(tile){
+    if(active===tile) return;
+    active?.removeAttribute('data-forest-active');
+    active=tile;
+    active?.setAttribute('data-forest-active','true');
+    if(active) burst(active);
+  }
+  function syncActive(){setActive(focused||hovered)}
+  function burst(tile){
+    if(!app||!enabled||performance.now()-lastPulse<140) return;
+    lastPulse=performance.now();
+    const tileRect=tile.getBoundingClientRect(), rootRect=root.getBoundingClientRect();
+    for(let i=0;i<10;i++){
+      const angle=Math.random()*Math.PI*2, distance=Math.max(tileRect.width,tileRect.height)*(.48+Math.random()*.12);
+      sparks.push({x:tileRect.left-rootRect.left+tileRect.width/2+Math.cos(angle)*distance,y:tileRect.top-rootRect.top+tileRect.height/2+Math.sin(angle)*distance,vx:Math.cos(angle)*1.1,vy:Math.sin(angle)*1.1,age:0,life:34+Math.random()*14,color:Math.random()>.4?0xb6d58b:0xd6ae5f});
+    }
+  }
+  function resize(){
+    if(!app||stopped) return;
+    const rect=root.getBoundingClientRect();
+    app.renderer.resize(Math.max(1,Math.round(rect.width)),Math.max(1,Math.round(rect.height)));
+    drawScene();
+  }
+  function drawScene(){
+    if(!app) return;
+    const width=app.renderer.width,height=app.renderer.height;
+    const mountains=app.stage.getChildByLabel('forest-mountains');
+    const trees=app.stage.getChildByLabel('forest-trees');
+    mountains.clear();
+    trees.clear();
+    mountains.moveTo(0,height*.72).lineTo(width*.14,height*.49).lineTo(width*.26,height*.61).lineTo(width*.43,height*.42).lineTo(width*.59,height*.61).lineTo(width*.77,height*.39).lineTo(width*.9,height*.54).lineTo(width,height*.46).lineTo(width,height).lineTo(0,height).closePath().fill({color:0x263c31,alpha:.34});
+    for(let x=0;x<width;x+=Math.max(16,width/54)){
+      const treeY=height*(.7+Math.random()*.16), step=Math.max(12,width/54);
+      trees.rect(x,treeY,3,height-treeY).fill({color:0x152d25,alpha:.34});
+      trees.rect(x-step*.36,treeY-step*.6,step*.72,step*.46).fill({color:0x203a2d,alpha:.3});
+      trees.rect(x-step*.2,treeY-step*.86,step*.4,step*.34).fill({color:0x304a38,alpha:.25});
+    }
+  }
+  function makeFog(width,height,index){
+    const cloud=new PIXI.Container(), art=new PIXI.Graphics(), block=Math.max(14,width/40), y=height*(.32+index*.13);
+    for(let x=-width;x<width*2;x+=block*2){
+      const h=block*(.35+Math.random()*.5), span=block*(1.5+Math.random()*2.8), offset=(Math.random()-.5)*block*.75;
+      art.rect(x,y+offset,span,h).fill({color:index===0?0xc4d0bc:0x9cafa0,alpha:(index===0?.08:.045)+Math.random()*.025});
+      art.rect(x+block*.35,y+offset-h*.55,span*.42,Math.max(2,h*.3)).fill({color:0xd0d8c8,alpha:.035});
+    }
+    cloud.addChild(art); cloud._speed=.08+index*.06; cloud._baseY=y; cloud._index=index;
+    return cloud;
+  }
+  function update(ticker){
+    if(!enabled||reduced||document.hidden) return;
+    const width=app.renderer.width,height=app.renderer.height,delta=Math.min(ticker.deltaTime,2);
+    const calm=root.classList.contains('xbn-forest-expanded')?.48:1;
+    const mountains=app.stage.getChildByLabel('forest-mountains');
+    const trees=app.stage.getChildByLabel('forest-trees');
+    mountains.x=Math.sin(ticker.lastTime*.00008)*2;
+    trees.x=Math.sin(ticker.lastTime*.00016)*4;
+    fog.forEach((cloud,index)=>{cloud.x+=cloud._speed*delta*(active?.35:1);if(cloud.x>width*.2)cloud.x=0;cloud.y=cloud._baseY+Math.sin(ticker.lastTime*.00013+index)*2});
+    const rootRect=root.getBoundingClientRect();
+    motes.forEach(mote=>{
+      mote.phase+=.012*delta; mote.y-=mote.speed*delta*calm; mote.x+=Math.sin(mote.phase)*.16*delta;
+      if(mote.y<0){mote.y=height;mote.x=Math.random()*width}
+      if(active){const rect=active.getBoundingClientRect(),dx=rect.left-rootRect.left+rect.width/2-mote.x,dy=rect.top-rootRect.top+rect.height/2-mote.y,d=Math.hypot(dx,dy),radius=Math.min(width,height)*.26;if(d<radius){const pull=.0008*(1-d/radius)*delta;mote.x+=dx*pull;mote.y+=dy*pull}}
+    });
+    const glows=app.stage.getChildByLabel('forest-particles'); glows.clear();
+    motes.forEach(mote=>glows.rect(Math.round(mote.x),Math.round(mote.y),mote.size,mote.size).fill({color:mote.color,alpha:.18+.2*(.5+.5*Math.sin(mote.phase))+(active?.2:0)}));
+    sparks=sparks.filter(spark=>spark.age<spark.life);
+    const energy=app.stage.getChildByLabel('forest-energy'); energy.clear();
+    sparks.forEach(spark=>{spark.age+=delta;spark.x+=spark.vx*delta;spark.y+=spark.vy*delta;spark.vx*=.96;spark.vy*=.96;energy.rect(Math.round(spark.x),Math.round(spark.y),2,2).fill({color:spark.color,alpha:Math.max(0,1-spark.age/spark.life)});});
+  }
+  async function init(){
+    try{
+      PIXI=await import('https://cdn.jsdelivr.net/npm/pixi.js@8.10.1/dist/pixi.min.mjs');
+      if(stopped)return;
+      app=new PIXI.Application();
+      const rect=root.getBoundingClientRect();
+      await app.init({width:Math.max(1,Math.round(rect.width)),height:Math.max(1,Math.round(rect.height)),backgroundAlpha:0,antialias:false,autoDensity:true,resolution:Math.min(devicePixelRatio||1,1.5),preference:'webgl',powerPreference:'low-power',autoStart:false});
+      if(stopped){app.destroy({removeView:true},{children:true});app=null;return}
+      app.canvas.setAttribute('aria-hidden','true');app.canvas.setAttribute('role','presentation');layer.append(app.canvas);
+      const mountains=new PIXI.Graphics();mountains.label='forest-mountains';app.stage.addChild(mountains);
+      const trees=new PIXI.Graphics();trees.label='forest-trees';app.stage.addChild(trees);
+      drawScene();
+      fog=[0,1,2].map(index=>makeFog(app.renderer.width,app.renderer.height,index));fog.forEach(cloud=>app.stage.addChild(cloud));
+      const glows=new PIXI.Graphics();glows.label='forest-particles';app.stage.addChild(glows);
+      const energy=new PIXI.Graphics();energy.label='forest-energy';app.stage.addChild(energy);
+      const count=matchMedia('(max-width: 700px)').matches?22:38;
+      motes=Array.from({length:count},()=>({x:Math.random()*app.renderer.width,y:Math.random()*app.renderer.height,size:2+Math.floor(Math.random()*2),speed:.18+Math.random()*.42,phase:Math.random()*6.28,color:Math.random()>.55?0xb1d184:0xd3aa5c}));
+      app.ticker.add(update);
+      if(!reduced&&!document.hidden)app.ticker.start();
+      root.classList.remove('xbn-forest-fallback');resize();
+    }catch(error){console.warn('PixiJS no disponible; se conserva el ambiente CSS.',error);root.classList.add('xbn-forest-fallback')}
+  }
+  function setEnabled(value){
+    enabled=value;toggle.textContent=enabled?'Ambiente: activo':'Ambiente: desactivado';
+    toggle.setAttribute('aria-pressed',String(enabled));toggle.setAttribute('aria-label',enabled?'Desactivar efectos ambientales':'Activar efectos ambientales');
+    root.classList.toggle('xbn-forest-off',!enabled);
+    if(active) active.toggleAttribute('data-forest-active',enabled);
+    if(app){if(enabled&&!reduced&&!document.hidden)app.ticker.start();else app.ticker.stop()}
+  }
+  tiles.forEach(tile=>{
+    tile.addEventListener('pointerenter',()=>{hovered=tile;syncActive()},{signal:abort.signal});
+    tile.addEventListener('pointerleave',()=>{if(hovered===tile)hovered=null;syncActive()},{signal:abort.signal});
+    tile.addEventListener('click',()=>burst(tile),{signal:abort.signal});
+  });
+  root.addEventListener('focusin',event=>{const tile=event.target.closest?.('.tile');if(tile){focused=tile;syncActive()}},{signal:abort.signal});
+  root.addEventListener('focusout',event=>{const tile=event.target.closest?.('.tile');if(!tile)return;const next=event.relatedTarget?.closest?.('.tile');if(next){focused=next;syncActive();return}if(focused===tile)focused=null;syncActive()},{signal:abort.signal});
+  const initiallyFocused=document.activeElement?.closest?.('.canvas .tile');
+  if(initiallyFocused){focused=initiallyFocused;syncActive()}
+  toggle.addEventListener('click',()=>setEnabled(!enabled),{signal:abort.signal});
+  document.addEventListener('visibilitychange',()=>{if(!app)return;if(document.hidden||!enabled||reduced)app.ticker.stop();else app.ticker.start()},{signal:abort.signal});
+  media.addEventListener?.('change',event=>{reduced=event.matches;if(!app)return;if(reduced||document.hidden||!enabled)app.ticker.stop();else app.ticker.start()},{signal:abort.signal});
+  window.addEventListener('resize',resize,{signal:abort.signal,passive:true});
+  resizeObserver=new ResizeObserver(resize);resizeObserver.observe(root);
+  mutationObserver=new MutationObserver(()=>root.classList.toggle('xbn-forest-expanded',!!document.querySelector('dialog[open]')||tiles.some(tile=>tile.getAttribute('aria-expanded')==='true')));
+  mutationObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open','aria-expanded']});
+  window.__xbnForest={destroy(){if(stopped)return;stopped=true;abort.abort();resizeObserver.disconnect();mutationObserver.disconnect();if(app){app.ticker.stop();app.destroy({removeView:true},{children:true,texture:true,textureSource:true});app=null}layer.remove();toggle.remove();delete window.__xbnForest}};
+  init();
+  window.addEventListener('pagehide',()=>window.__xbnForest?.destroy(),{once:true});
+})();
 </script></body></html>
