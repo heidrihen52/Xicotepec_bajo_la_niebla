@@ -13941,7 +13941,7 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
 
   const brand = document.querySelector('nav .brand');
   if (brand && !brand.querySelector('.lumbra-logo')) {
-    const label = brand.lastChild?.textContent.trim() || 'Bajo la niebla';
+    const label = 'Xicotepec bajo la niebla';
     const logo = new Image();
     logo.className = 'lumbra-logo';
     logo.src = '../images/lumbre_studio_transparent.png';
@@ -13950,7 +13950,7 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
     const identity = document.createElement('span');
     identity.className = 'brand-identity';
     const company = document.createElement('strong');
-    company.textContent = 'LUMBRA STUDIO';
+    company.textContent = 'LUMBRE STUDIO';
     const project = document.createElement('span');
     project.textContent = label;
     identity.append(company, project);
@@ -13964,6 +13964,230 @@ if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))
     logo.src = '../images/xicotepec_bajo_la_niebla.png';
     logo.alt = 'Logotipo de Xicotepec bajo la niebla';
     figure.prepend(logo);
+  }
+})();
+</script><script>
+(() => {
+  const financials = {
+    costos: {
+      brief: 'Presupuesto de lanzamiento estimado: $420,000 MXN y operación de $28,000 MXN al mes.',
+      concepts: [
+        ['Desarrollo · $250,000 MXN', 'actual'],
+        ['Hosting y datos · $4,000/mes', 'actual'],
+        ['Producción audiovisual · $70,000 MXN', 'actual'],
+        ['Distribución · 30% por tienda', 'futuro'],
+        ['Mantenimiento · $24,000/mes', 'futuro']
+      ],
+      sections: [
+        {
+          title: 'Presupuesto de lanzamiento',
+          state: 'actual',
+          text: 'Escenario base para llevar el producto semilla a producción en México. Son estimaciones para tomar decisiones, no gastos ya ejecutados ni cotizaciones cerradas.',
+          items: [
+            'Desarrollo Unity, Flutter, PWA, API e integración: $250,000 MXN.',
+            'Arte, música, audio, animación y localización: $70,000 MXN.',
+            'Investigación cultural, asesoría y revisión legal: $35,000 MXN.',
+            'Pruebas, accesibilidad, dispositivos y control de calidad: $25,000 MXN.',
+            'Lanzamiento, materiales de comunicación y campaña inicial: $40,000 MXN.',
+            'Inversión inicial estimada: $420,000 MXN.'
+          ]
+        },
+        {
+          title: 'Operación mensual',
+          state: 'actual',
+          text: 'Una vez publicado, el proyecto necesita caja mensual para seguir disponible, atender incidencias y mantener el contenido actualizado.',
+          items: [
+            'Servidores, base de datos, almacenamiento, respaldos y analítica: $4,000 MXN al mes.',
+            'Mantenimiento técnico, soporte y correcciones: $14,000 MXN al mes.',
+            'Contenido, comunidad y comunicación: $10,000 MXN al mes.',
+            'Costo operativo base: $28,000 MXN al mes o $336,000 MXN al año.',
+            'Se recomienda conservar una reserva equivalente a tres meses: $84,000 MXN.'
+          ]
+        },
+        {
+          title: 'Distribución y costos variables',
+          state: 'futuro',
+          text: 'El precio publicado no es igual al dinero que recibe el proyecto: las tiendas descuentan su comisión y pueden existir impuestos, reembolsos y costos de cobro.',
+          items: [
+            'Comisión de tienda considerada para el escenario: 30% del precio publicado.',
+            'A $149 MXN por copia, el ingreso antes de impuestos y después de tienda sería aproximadamente $104 MXN.',
+            'Marketing de continuidad: $12,000 MXN mensuales durante los primeros seis meses.',
+            'No se deben comprometer campañas pagadas hasta medir conversión y costo de adquisición.'
+          ]
+        },
+        {
+          title: 'Punto de equilibrio',
+          state: 'futuro',
+          text: 'Con una inversión inicial de $420,000 MXN y un neto aproximado de $104 MXN por copia, el lanzamiento necesita vender cerca de 4,030 copias para recuperar la inversión inicial, sin contar impuestos.',
+          items: [
+            'Meta de ventas del primer año: 7,500 copias.',
+            'Ingresos netos estimados por juego base: $782,250 MXN.',
+            'Costo de lanzamiento más operación anual: $756,000 MXN.',
+            'Resultado operativo de referencia antes de impuestos: $26,250 MXN.',
+            'La meta combina venta directa, licencias y colaboraciones; no se presenta como ingreso garantizado.'
+          ]
+        }
+      ]
+    },
+    ingresos: {
+      brief: 'Precio sugerido de lanzamiento: $149 MXN; meta inicial: 3,000 copias y $313,000 MXN netos.',
+      concepts: [
+        ['Juego base · $149 MXN', 'futuro'],
+        ['Campañas · $79 MXN', 'futuro'],
+        ['Marketplace · 15% comisión', 'futuro'],
+        ['Licencias · $12,000/año', 'futuro'],
+        ['Colaboraciones · desde $35,000', 'futuro']
+      ],
+      sections: [
+        {
+          title: 'Venta del juego base',
+          state: 'futuro',
+          text: 'La fuente principal de caja al lanzamiento sería una compra única de $149 MXN. El precio es una hipótesis comercial que debe validarse con una prueba de disposición de pago.',
+          items: [
+            'Precio al público propuesto: $149 MXN por copia.',
+            'Después de una comisión de tienda del 30%: aproximadamente $104 MXN por copia, antes de impuestos.',
+            'Meta inicial de validación: 3,000 copias, equivalentes a $447,000 MXN brutos.',
+            'Neto aproximado después de tienda: $313,000 MXN.'
+          ]
+        },
+        {
+          title: 'Contenido adicional',
+          state: 'futuro',
+          text: 'Las campañas y capítulos nuevos pueden venderse como expansiones independientes, sin bloquear la experiencia base.',
+          items: [
+            'Precio de referencia por campaña: $79 MXN.',
+            'Meta de prueba: 500 compras de una campaña, $39,500 MXN brutos.',
+            'El contenido debe justificar el pago con nuevas historias, escenarios y horas de juego.',
+            'No se usará publicidad invasiva ni mecánicas de pago que afecten la progresión.'
+          ]
+        },
+        {
+          title: 'Licencias educativas',
+          state: 'futuro',
+          text: 'Escuelas, universidades y centros culturales podrían contratar una licencia anual con materiales de apoyo y uso institucional.',
+          items: [
+            'Precio de referencia: $12,000 MXN por institución al año.',
+            'Incluye acceso acordado, guía didáctica y soporte básico.',
+            'Meta piloto: 5 instituciones, $60,000 MXN de facturación anual.',
+            'Cada contrato debe definir alcance, usuarios, soporte, impuestos y renovación.'
+          ]
+        },
+        {
+          title: 'Colaboraciones y patrocinios',
+          state: 'futuro',
+          text: 'Municipios, turismo y cultura pueden financiar contenidos específicos, siempre con objetivos, entregables y derechos de uso por escrito.',
+          items: [
+            'Paquete de colaboración de referencia: desde $35,000 MXN.',
+            'Meta piloto: 2 colaboraciones, $70,000 MXN de facturación.',
+            'El patrocinio no sustituye la independencia editorial ni la revisión cultural.',
+            'No se contabilizan contratos hasta contar con propuesta aceptada y anticipo.'
+          ]
+        },
+        {
+          title: 'Marketplace',
+          state: 'futuro',
+          text: 'En una etapa posterior, creadores podrían vender mapas, historias o recursos. La plataforma retendría una comisión y transferiría el resto al creador.',
+          items: [
+            'Comisión de plataforma propuesta: 15% de cada transacción.',
+            'Ejemplo: de una venta de $100 MXN, $15 MXN serían ingreso bruto de la plataforma.',
+            'Requiere moderación, términos de uso, facturación y control de derechos.',
+            'No se incluye en el flujo de caja del primer año: depende de comunidad y contenido suficiente.'
+          ]
+        },
+        {
+          title: 'Escenario de caja del primer año',
+          state: 'futuro',
+          text: 'Escenario prudente para presentar viabilidad, no una promesa de ventas: 7,500 juegos, cinco licencias educativas y dos colaboraciones.',
+          items: [
+            'Juego base: $783,000 MXN netos estimados.',
+            'Licencias educativas: $60,000 MXN.',
+            'Colaboraciones: $70,000 MXN.',
+            'Ingresos de referencia: $912,250 MXN.',
+            'Después de $756,000 MXN de lanzamiento y operación anual: $156,250 MXN antes de impuestos y reinversión.',
+            'La reinversión prioritaria sería contenido, soporte y reserva de caja.'
+          ]
+        }
+      ]
+    }
+  };
+
+  Object.entries(financials).forEach(([id, financial]) => {
+    const block = DATA.blocks.find((item) => item.id === id);
+    if (block) Object.assign(block, financial);
+    const tile = document.querySelector(`[data-block="${id}"]`);
+    if (!tile) return;
+    tile.querySelector('.brief').textContent = financial.brief;
+    tile.querySelector('.concepts').innerHTML = financial.concepts.map(([label, state]) => (
+      `<li><span class="dot ${state === 'futuro' ? 'future' : ''}" aria-hidden="true"></span><span>${label}</span><${state === 'futuro' ? 'em class="futurelabel">Futuro</em>' : 'span class="sr">Actual / en desarrollo</span>'}</li>`
+    )).join('');
+    const appendix = [...document.querySelectorAll('.printappendix article')]
+      .find((article) => article.querySelector('h3')?.textContent.trim() === (
+        id === 'costos' ? 'Estructura de costos' : 'Fuentes de ingreso'
+      ));
+    if (appendix) {
+      appendix.innerHTML = `<h3>${id === 'costos' ? 'Estructura de costos' : 'Fuentes de ingreso'}</h3>${
+        financial.sections.map((section) => `
+          <h4>${section.title}</h4>
+          <span class="badge ${section.state === 'futuro' ? 'future' : ''}">${section.state === 'futuro' ? 'Crecimiento futuro' : 'Actual / en desarrollo'}</span>
+          <p>${section.text}</p>
+          <ul>${section.items.map((item) => `<li>${item}</li>`).join('')}</ul>
+        `).join('')
+      }`;
+    }
+  });
+  const financialNote = document.querySelector('.compare .future .smallnote');
+  if (financialNote) {
+    financialNote.textContent = 'Las cifras de monetización y precios son proyecciones para evaluar viabilidad; no representan contratos, ventas o ingresos ya obtenidos.';
+  }
+})();
+</script><script>
+(() => {
+  const roles = [
+    ['Jesús Domínguez Ramírez', 'Programación de mecánicas, API e integración, diseño de niveles.'],
+    ['Adrián Pérez Jiménez', 'Interfaces y experiencia de usuario.'],
+    ['Luis Daniel Suárez Escamilla', 'Pruebas y contenido cultural.'],
+    ['Sayurid Bautista Cruz', 'Documentación y arte.'],
+    ['Jonathan Emmanuel Lopez Morales', 'Documentación y apoyo en la aplicación móvil.']
+  ];
+  const block = DATA.blocks.find((item) => item.id === 'recursos');
+  if (block) {
+    block.brief = 'Equipo humano con roles definidos para producir, validar y presentar el proyecto.';
+    block.concepts = [
+      ['Roles del equipo', 'actual'],
+      ['Unity + C#', 'actual'],
+      ['PWA + Flutter', 'actual'],
+      ['API y nube', 'actual'],
+      ['Contenido cultural', 'actual']
+    ];
+    const teamSection = block.sections.find((section) => section.title === 'Equipo humano');
+    if (teamSection) {
+      teamSection.text = 'Cada integrante aporta una responsabilidad principal al desarrollo del producto semilla. Los roles se coordinan durante la integración y las pruebas.';
+      teamSection.items = roles.map(([name, role]) => `${name}: ${role}`);
+    }
+  }
+  const tile = document.querySelector('[data-block="recursos"]');
+  if (tile && block) {
+    tile.querySelector('.brief').textContent = block.brief;
+    tile.querySelector('.concepts').innerHTML = block.concepts.map(([label]) => (
+      `<li><span class="dot" aria-hidden="true"></span><span>${label}</span><span class="sr">Actual / en desarrollo</span></li>`
+    )).join('');
+  }
+  const appendix = [...document.querySelectorAll('.printappendix article')]
+    .find((article) => article.querySelector('h3')?.textContent.trim() === 'Recursos clave');
+  if (appendix && block) {
+    const teamSection = block.sections.find((section) => section.title === 'Equipo humano');
+    if (teamSection) {
+      const heading = appendix.querySelector('h3');
+      const teamHeading = [...appendix.querySelectorAll('h4')]
+        .find((heading) => heading.textContent.trim() === 'Equipo humano');
+      if (heading && teamHeading) {
+        teamHeading.nextElementSibling.nextElementSibling.textContent = teamSection.text;
+        const list = teamHeading.nextElementSibling.nextElementSibling.nextElementSibling;
+        if (list?.tagName === 'UL') {
+          list.innerHTML = teamSection.items.map((item) => `<li>${item}</li>`).join('');
+        }
+      }
+    }
   }
 })();
 </script></body></html>
