@@ -13737,4 +13737,457 @@ const frame=document.querySelector('#archifyFrame');
 function connectArchify(){try{const doc=frame.contentDocument;if(!doc)return;doc.querySelectorAll('[data-node-id]').forEach(node=>{const id=node.getAttribute('data-node-id');const m=/^etapa(\d+)$/.exec(id);if(!m)return;const open=()=>{lastTrigger=document.querySelector('[data-evolution="'+(Number(m[1])-1)+'"]');openEvolution(Number(m[1])-1)};node.addEventListener('click',event=>{event.stopPropagation();open()},true);node.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();open()}},true)})}catch(error){/* Las diez etapas siguen disponibles mediante sus botones accesibles. */}}
 frame.addEventListener('load',connectArchify);
 if(frame.contentDocument&&frame.contentDocument.querySelector('[data-node-id]'))connectArchify();
+</script>
+<style>
+  .canvas.xbn-forest{position:relative;isolation:isolate;overflow:hidden;background-color:#19352c}
+  .xbn-forest__layer{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,rgba(161,183,161,.12),transparent 34%,rgba(21,45,36,.18)),repeating-linear-gradient(0deg,transparent 0 7px,rgba(174,196,173,.025) 7px 8px)}
+  .xbn-forest__layer canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+  .canvas.xbn-forest>.tile{position:relative;z-index:1}
+  .canvas.xbn-forest>.tile[data-forest-active="true"]{outline:2px solid rgba(158,201,156,.85);outline-offset:2px;box-shadow:0 0 0 5px rgba(115,166,126,.12),0 8px 24px rgba(24,63,47,.16)}
+  .canvas.xbn-forest.xbn-forest-off{background-color:transparent}
+  .canvas.xbn-forest.xbn-forest-off .xbn-forest__layer{display:none}
+  .canvas.xbn-forest.xbn-forest-fallback .xbn-forest__layer{background:linear-gradient(180deg,rgba(161,183,161,.15),transparent 35%,rgba(21,45,36,.26)),repeating-linear-gradient(0deg,transparent 0 7px,rgba(174,196,173,.04) 7px 8px),repeating-linear-gradient(90deg,transparent 0 47px,rgba(124,155,124,.08) 47px 49px)}
+  @media print{.xbn-forest__layer,#xbn-forest-toggle{display:none!important}.canvas.xbn-forest{overflow:visible}}
+</style>
+<script type="module">
+(() => {
+  const root=document.querySelector('.canvas');
+  if(!root||window.__xbnForest) return;
+  const tiles=[...root.querySelectorAll('.tile')];
+  if(!tiles.length) return;
+  const layer=document.createElement('div');
+  layer.className='xbn-forest__layer';
+  layer.setAttribute('aria-hidden','true');
+  root.classList.add('xbn-forest');
+  root.prepend(layer);
+  const toggle=document.createElement('button');
+  toggle.id='xbn-forest-toggle';
+  toggle.type='button';
+  toggle.textContent='Ambiente: activo';
+  toggle.setAttribute('aria-pressed','true');
+  toggle.setAttribute('aria-label','Desactivar efectos ambientales');
+  document.querySelector('.navtools')?.append(toggle);
+
+  const media=matchMedia('(prefers-reduced-motion: reduce)');
+  const abort=new AbortController();
+  let PIXI=null, app=null, active=null, hovered=null, focused=null, selected=null, enabled=true, reduced=media.matches;
+  const finePointer=matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const pointerTarget={x:0,y:0}, pointerOffset={x:0,y:0};
+  let fog=[], motes=[], sparks=[], resizeObserver, mutationObserver, stopped=false, lastPulse=0;
+
+  function setActive(tile){
+    if(active===tile) return;
+    active?.removeAttribute('data-forest-active');
+    active=tile;
+    active?.setAttribute('data-forest-active','true');
+    if(active) burst(active);
+  }
+  function syncActive(){setActive(focused||hovered)}
+  function selectTile(tile){
+    selected?.removeAttribute('data-forest-selected');
+    selected=tile;
+    selected?.setAttribute('data-forest-selected','true');
+    if(selected) burst(selected);
+  }
+  function burst(tile){
+    if(!app||!enabled||performance.now()-lastPulse<140) return;
+    lastPulse=performance.now();
+    const tileRect=tile.getBoundingClientRect(), rootRect=root.getBoundingClientRect();
+    for(let i=0;i<10;i++){
+      const angle=Math.random()*Math.PI*2, distance=Math.max(tileRect.width,tileRect.height)*(.48+Math.random()*.12);
+      sparks.push({x:tileRect.left-rootRect.left+tileRect.width/2+Math.cos(angle)*distance,y:tileRect.top-rootRect.top+tileRect.height/2+Math.sin(angle)*distance,vx:Math.cos(angle)*1.1,vy:Math.sin(angle)*1.1,age:0,life:34+Math.random()*14,color:Math.random()>.4?0xb6d58b:0xd6ae5f});
+    }
+  }
+  function resize(){
+    if(!app?.renderer||stopped) return;
+    const rect=root.getBoundingClientRect();
+    const width=Math.max(1,Math.round(rect.width)),height=Math.max(1,Math.round(rect.height));
+    app.renderer.resize(width,height);
+    drawScene();
+    fog.forEach(cloud=>{app.stage.removeChild(cloud);cloud.destroy({children:true})});
+    fog=[0,1,2].map(index=>makeFog(width,height,index));fog.forEach(cloud=>app.stage.addChild(cloud));
+    motes.forEach(mote=>{mote.x=Math.min(mote.x,width);mote.y=Math.min(mote.y,height)});
+  }
+  function drawScene(){
+    if(!app) return;
+    const width=app.renderer.width,height=app.renderer.height;
+    const far=app.stage.getChildByLabel('forest-far');
+    const ridge=app.stage.getChildByLabel('forest-ridge');
+    const town=app.stage.getChildByLabel('forest-town');
+    const trees=app.stage.getChildByLabel('forest-trees');
+    const near=app.stage.getChildByLabel('forest-near');
+    [far,ridge,town,trees,near].forEach(layer=>layer.clear());
+    far.moveTo(0,height*.62).lineTo(width*.1,height*.49).lineTo(width*.18,height*.52).lineTo(width*.31,height*.34).lineTo(width*.41,height*.5).lineTo(width*.56,height*.3).lineTo(width*.68,height*.47).lineTo(width*.82,height*.32).lineTo(width,height*.48).lineTo(width,height*.78).lineTo(0,height*.78).closePath().fill({color:0x9aab91,alpha:.16});
+    far.moveTo(0,height*.68).lineTo(width*.16,height*.55).lineTo(width*.29,height*.62).lineTo(width*.45,height*.43).lineTo(width*.58,height*.58).lineTo(width*.73,height*.41).lineTo(width*.88,height*.59).lineTo(width,height*.5).lineTo(width,height*.82).lineTo(0,height*.82).closePath().fill({color:0x55734a,alpha:.22});
+    ridge.moveTo(0,height*.76).lineTo(width*.13,height*.63).lineTo(width*.23,height*.72).lineTo(width*.37,height*.56).lineTo(width*.49,height*.71).lineTo(width*.64,height*.55).lineTo(width*.76,height*.69).lineTo(width*.91,height*.57).lineTo(width,height*.65).lineTo(width,height*.91).lineTo(0,height*.91).closePath().fill({color:0x1f493a,alpha:.46});
+    const townBase=height*.78, unit=Math.max(8,width/130);
+    for(let i=0,x=width*.14;x<width*.88;i++,x+=unit*(2.6+(i*7%4)*.28)){
+      const w=unit*(1.4+(i*3%3)*.28), h=unit*(1.15+(i*5%4)*.3), y=townBase-h;
+      town.rect(x,y,w,h).fill({color:i%3===0?0x38251c:0x805438,alpha:.22});
+      town.moveTo(x-unit*.18,y).lineTo(x+w*.5,y-unit*.38).lineTo(x+w+unit*.18,y).closePath().fill({color:0x142b27,alpha:.3});
+      town.rect(x+w*.18,y+h*.4,unit*.22,h*.6).fill({color:0xe7ad55,alpha:i%5===0?.2:.08});
+    }
+    const step=Math.max(14,width/62);
+    for(let i=0,x=0;x<width;x+=step,i++){
+      const treeY=height*(.69+((i*37)%17)/100), crown=step*(.54+(i*13%4)*.08), trunk=step*.12;
+      trees.rect(x,treeY,trunk,height-treeY).fill({color:0x142b27,alpha:.58});
+      trees.rect(x-crown*.42,treeY-step*.58,crown*.84,step*.42).fill({color:0x1f493a,alpha:.52});
+      trees.rect(x-crown*.3,treeY-step*.91,crown*.6,step*.38).fill({color:i%4===0?0x55734a:0x294b37,alpha:.48});
+      trees.rect(x-crown*.16,treeY-step*1.16,crown*.32,step*.3).fill({color:0x55734a,alpha:.38});
+    }
+    for(let i=0;i<9;i++){
+      const edge=i%2===0?0:width-step*1.4, y=height*(.84+(i%4)*.025), spread=step*(.6+(i%3)*.25);
+      near.rect(edge,y,step*1.4,step*.26).fill({color:0x142b27,alpha:.48});
+      near.rect(edge+(i%2===0?step*.42:-step*.18),y-step*.26,spread,step*.28).fill({color:0x1f493a,alpha:.42});
+    }
+  }
+  function makeFog(width,height,index){
+    const cloud=new PIXI.Container(), art=new PIXI.Graphics(), block=Math.max(14,width/40), y=height*(.35+index*.12);
+    for(let x=-width;x<width*2;x+=block*2){
+      const h=block*(.3+Math.random()*.45), span=block*(1.4+Math.random()*2.6), offset=(Math.random()-.5)*block*.6;
+      art.rect(x,y+offset,span,h).fill({color:index===0?0xc4d0bc:0x9cafa0,alpha:(index===0?.07:.035)+Math.random()*.018});
+      art.rect(x+block*.3,y+offset-h*.45,span*.38,Math.max(2,h*.27)).fill({color:0xd0d8c8,alpha:.025});
+    }
+    cloud.addChild(art); cloud._speed=.045+index*.035; cloud._baseY=y; cloud._index=index; cloud._phase=Math.random()*6.28;
+    return cloud;
+  }
+  function update(ticker){
+    if(!enabled||reduced||document.hidden) return;
+    const width=app.renderer.width,height=app.renderer.height,delta=Math.min(ticker.deltaTime,2);
+    const calm=root.classList.contains('xbn-forest-expanded')?.48:1;
+    const far=app.stage.getChildByLabel('forest-far');
+    const ridge=app.stage.getChildByLabel('forest-ridge');
+    const town=app.stage.getChildByLabel('forest-town');
+    const trees=app.stage.getChildByLabel('forest-trees');
+    pointerOffset.x+=(pointerTarget.x-pointerOffset.x)*Math.min(.035*delta,.12);
+    pointerOffset.y+=(pointerTarget.y-pointerOffset.y)*Math.min(.035*delta,.12);
+    far.x=pointerOffset.x*-3+Math.sin(ticker.lastTime*.00004)*.8;
+    far.y=pointerOffset.y*-1;
+    ridge.x=pointerOffset.x*-6+Math.sin(ticker.lastTime*.000055)*1.2;
+    town.x=pointerOffset.x*-9;
+    trees.x=pointerOffset.x*-13+Math.sin(ticker.lastTime*.00009)*1.5;
+    fog.forEach((cloud,index)=>{cloud.x+=cloud._speed*delta*(active?.55:1)+pointerOffset.x*(index+1)*.002;if(cloud.x>width*.2)cloud.x=0;cloud.y=cloud._baseY+Math.sin(ticker.lastTime*.00008+cloud._phase)*2;cloud.alpha=.82+Math.sin(ticker.lastTime*.00012+cloud._phase)*.08});
+    const rootRect=root.getBoundingClientRect();
+    let focusPoint=null;
+    if(active){const rect=active.getBoundingClientRect();focusPoint={x:rect.left-rootRect.left+rect.width/2,y:rect.top-rootRect.top+rect.height/2,radius:Math.min(width,height)*.24}}
+    motes.forEach(mote=>{
+      mote.phase+=.012*delta; mote.y-=mote.speed*delta*calm; mote.x+=Math.sin(mote.phase)*.16*delta;
+      if(mote.y<0){mote.y=height;mote.x=Math.random()*width}
+      if(focusPoint){const dx=focusPoint.x-mote.x,dy=focusPoint.y-mote.y,d=Math.hypot(dx,dy);if(d<focusPoint.radius){const pull=.0007*(1-d/focusPoint.radius)*delta;mote.x+=dx*pull;mote.y+=dy*pull}}
+    });
+    const glows=app.stage.getChildByLabel('forest-particles'); glows.clear();
+    motes.forEach(mote=>{const d=focusPoint?Math.hypot(focusPoint.x-mote.x,focusPoint.y-mote.y):Infinity,heat=focusPoint?Math.max(0,1-d/focusPoint.radius):0,glimmer=Math.max(0,Math.sin(mote.phase));glows.rect(Math.round(mote.x),Math.round(mote.y),mote.size,mote.size).fill({color:mote.color,alpha:glimmer>.16?.08+glimmer*.16+heat*.32:heat*.24})});
+    if(focusPoint){const pulse=.035+.025*(.5+.5*Math.sin(ticker.lastTime*.008));glows.rect(Math.round(focusPoint.x-16),Math.round(focusPoint.y-16),3,3).fill({color:0x238c78,alpha:pulse});glows.rect(Math.round(focusPoint.x+13),Math.round(focusPoint.y-8),2,5).fill({color:0xe7ad55,alpha:pulse});glows.rect(Math.round(focusPoint.x-8),Math.round(focusPoint.y+13),4,2).fill({color:0x238c78,alpha:pulse})}
+    sparks=sparks.filter(spark=>spark.age<spark.life);
+    const energy=app.stage.getChildByLabel('forest-energy'); energy.clear();
+    sparks.forEach(spark=>{spark.age+=delta;spark.x+=spark.vx*delta;spark.y+=spark.vy*delta;spark.vx*=.96;spark.vy*=.96;energy.rect(Math.round(spark.x),Math.round(spark.y),2,2).fill({color:spark.color,alpha:Math.max(0,1-spark.age/spark.life)});});
+  }
+  async function init(){
+    try{
+      PIXI=await import('https://cdn.jsdelivr.net/npm/pixi.js@8.10.1/dist/pixi.min.mjs');
+      if(stopped)return;
+      app=new PIXI.Application();
+      const rect=root.getBoundingClientRect();
+      await app.init({width:Math.max(1,Math.round(rect.width)),height:Math.max(1,Math.round(rect.height)),backgroundAlpha:0,antialias:false,autoDensity:true,resolution:Math.min(devicePixelRatio||1,1.5),preference:'webgl',powerPreference:'low-power',autoStart:false});
+      if(stopped){app.destroy({removeView:true},{children:true});app=null;return}
+      app.canvas.setAttribute('aria-hidden','true');app.canvas.setAttribute('role','presentation');layer.append(app.canvas);
+      for(const label of ['forest-far','forest-ridge','forest-town','forest-trees','forest-near']){const layer=new PIXI.Graphics();layer.label=label;app.stage.addChild(layer)}
+      drawScene();
+      fog=[0,1,2].map(index=>makeFog(app.renderer.width,app.renderer.height,index));fog.forEach(cloud=>app.stage.addChild(cloud));
+      const glows=new PIXI.Graphics();glows.label='forest-particles';app.stage.addChild(glows);
+      const energy=new PIXI.Graphics();energy.label='forest-energy';app.stage.addChild(energy);
+      const count=matchMedia('(max-width: 700px)').matches?10:20;
+      motes=Array.from({length:count},()=>({x:Math.random()*app.renderer.width,y:Math.random()*app.renderer.height,size:2+Math.floor(Math.random()*2),speed:.18+Math.random()*.42,phase:Math.random()*6.28,color:Math.random()>.55?0xb1d184:0xd3aa5c}));
+      app.ticker.add(update);
+      if(!reduced&&!document.hidden)app.ticker.start();
+      root.classList.remove('xbn-forest-fallback');resize();
+    }catch(error){console.warn('PixiJS no disponible; se conserva el ambiente CSS.',error);root.classList.add('xbn-forest-fallback')}
+  }
+  function setEnabled(value){
+    enabled=value;toggle.textContent=enabled?'Ambiente: activo':'Ambiente: desactivado';
+    toggle.setAttribute('aria-pressed',String(enabled));toggle.setAttribute('aria-label',enabled?'Desactivar efectos ambientales':'Activar efectos ambientales');
+    root.classList.toggle('xbn-forest-off',!enabled);
+    if(active) active.toggleAttribute('data-forest-active',enabled);
+    if(app){if(enabled&&!reduced&&!document.hidden)app.ticker.start();else app.ticker.stop()}
+  }
+  tiles.forEach(tile=>{
+    tile.addEventListener('pointerenter',()=>{hovered=tile;syncActive()},{signal:abort.signal});
+    tile.addEventListener('pointerleave',()=>{if(hovered===tile)hovered=null;syncActive()},{signal:abort.signal});
+    tile.addEventListener('click',()=>{selectTile(tile);burst(tile)},{signal:abort.signal});
+  });
+  root.addEventListener('focusin',event=>{const tile=event.target.closest?.('.tile');if(tile){focused=tile;syncActive()}},{signal:abort.signal});
+  root.addEventListener('focusout',event=>{const tile=event.target.closest?.('.tile');if(!tile)return;const next=event.relatedTarget?.closest?.('.tile');if(next){focused=next;syncActive();return}if(focused===tile)focused=null;syncActive()},{signal:abort.signal});
+  const initiallyFocused=document.activeElement?.closest?.('.canvas .tile');
+  if(initiallyFocused){focused=initiallyFocused;syncActive()}
+  root.addEventListener('pointermove',event=>{if(!finePointer||!enabled)return;const rect=root.getBoundingClientRect();pointerTarget.x=((event.clientX-rect.left)/rect.width-.5)*2;pointerTarget.y=((event.clientY-rect.top)/rect.height-.5)*2},{signal:abort.signal,passive:true});
+  root.addEventListener('pointerleave',()=>{pointerTarget.x=0;pointerTarget.y=0},{signal:abort.signal,passive:true});
+  toggle.addEventListener('click',()=>setEnabled(!enabled),{signal:abort.signal});
+  document.addEventListener('visibilitychange',()=>{if(!app)return;if(document.hidden||!enabled||reduced)app.ticker.stop();else app.ticker.start()},{signal:abort.signal});
+  media.addEventListener?.('change',event=>{reduced=event.matches;if(!app)return;if(reduced||document.hidden||!enabled)app.ticker.stop();else app.ticker.start()},{signal:abort.signal});
+  window.addEventListener('resize',resize,{signal:abort.signal,passive:true});
+  resizeObserver=new ResizeObserver(resize);resizeObserver.observe(root);
+  mutationObserver=new MutationObserver(()=>root.classList.toggle('xbn-forest-expanded',!!document.querySelector('dialog[open]')||tiles.some(tile=>tile.getAttribute('aria-expanded')==='true')));
+  mutationObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:['open','aria-expanded']});
+  window.__xbnForest={destroy(){if(stopped)return;stopped=true;abort.abort();resizeObserver.disconnect();mutationObserver.disconnect();if(app){app.ticker.stop();app.destroy({removeView:true},{children:true,texture:true,textureSource:true});app=null}layer.remove();toggle.remove();delete window.__xbnForest}};
+  init();
+  window.addEventListener('pagehide',()=>window.__xbnForest?.destroy(),{once:true});
+})();
+</script><script>
+(() => {
+  const stylesheet = document.createElement('link');
+  stylesheet.rel = 'stylesheet';
+  stylesheet.href = new URL('./redesign.css?v=4', document.baseURI).href;
+  document.head.append(stylesheet);
+
+  const brand = document.querySelector('nav .brand');
+  if (brand && !brand.querySelector('.lumbra-logo')) {
+    const label = 'Xicotepec bajo la niebla';
+    const logo = new Image();
+    logo.className = 'lumbra-logo';
+    logo.src = '../images/lumbre_studio_transparent.png';
+    logo.alt = 'Lumbra Studio';
+
+    const identity = document.createElement('span');
+    identity.className = 'brand-identity';
+    const company = document.createElement('strong');
+    company.textContent = 'LUMBRE STUDIO';
+    const project = document.createElement('span');
+    project.textContent = label;
+    identity.append(company, project);
+    brand.replaceChildren(logo, identity);
+  }
+
+  const figure = document.querySelector('.hero figure');
+  if (figure && !figure.querySelector('.game-logo')) {
+    const logo = new Image();
+    logo.className = 'game-logo';
+    logo.src = '../images/xicotepec_bajo_la_niebla.png';
+    logo.alt = 'Logotipo de Xicotepec bajo la niebla';
+    figure.prepend(logo);
+  }
+})();
+</script><script>
+(() => {
+  const financials = {
+    costos: {
+      brief: 'Presupuesto de lanzamiento estimado: $420,000 MXN y operación de $28,000 MXN al mes.',
+      concepts: [
+        ['Desarrollo · $250,000 MXN', 'actual'],
+        ['Hosting y datos · $4,000/mes', 'actual'],
+        ['Producción audiovisual · $70,000 MXN', 'actual'],
+        ['Distribución · 30% por tienda', 'futuro'],
+        ['Mantenimiento · $24,000/mes', 'futuro']
+      ],
+      sections: [
+        {
+          title: 'Presupuesto de lanzamiento',
+          state: 'actual',
+          text: 'Escenario base para llevar el producto semilla a producción en México. Son estimaciones para tomar decisiones, no gastos ya ejecutados ni cotizaciones cerradas.',
+          items: [
+            'Desarrollo Unity, Flutter, PWA, API e integración: $250,000 MXN.',
+            'Arte, música, audio, animación y localización: $70,000 MXN.',
+            'Investigación cultural, asesoría y revisión legal: $35,000 MXN.',
+            'Pruebas, accesibilidad, dispositivos y control de calidad: $25,000 MXN.',
+            'Lanzamiento, materiales de comunicación y campaña inicial: $40,000 MXN.',
+            'Inversión inicial estimada: $420,000 MXN.'
+          ]
+        },
+        {
+          title: 'Operación mensual',
+          state: 'actual',
+          text: 'Una vez publicado, el proyecto necesita caja mensual para seguir disponible, atender incidencias y mantener el contenido actualizado.',
+          items: [
+            'Servidores, base de datos, almacenamiento, respaldos y analítica: $4,000 MXN al mes.',
+            'Mantenimiento técnico, soporte y correcciones: $14,000 MXN al mes.',
+            'Contenido, comunidad y comunicación: $10,000 MXN al mes.',
+            'Costo operativo base: $28,000 MXN al mes o $336,000 MXN al año.',
+            'Se recomienda conservar una reserva equivalente a tres meses: $84,000 MXN.'
+          ]
+        },
+        {
+          title: 'Distribución y costos variables',
+          state: 'futuro',
+          text: 'El precio publicado no es igual al dinero que recibe el proyecto: las tiendas descuentan su comisión y pueden existir impuestos, reembolsos y costos de cobro.',
+          items: [
+            'Comisión de tienda considerada para el escenario: 30% del precio publicado.',
+            'A $149 MXN por copia, el ingreso antes de impuestos y después de tienda sería aproximadamente $104 MXN.',
+            'Marketing de continuidad: $12,000 MXN mensuales durante los primeros seis meses.',
+            'No se deben comprometer campañas pagadas hasta medir conversión y costo de adquisición.'
+          ]
+        },
+        {
+          title: 'Punto de equilibrio',
+          state: 'futuro',
+          text: 'Con una inversión inicial de $420,000 MXN y un neto aproximado de $104 MXN por copia, el lanzamiento necesita vender cerca de 4,030 copias para recuperar la inversión inicial, sin contar impuestos.',
+          items: [
+            'Meta de ventas del primer año: 7,500 copias.',
+            'Ingresos netos estimados por juego base: $782,250 MXN.',
+            'Costo de lanzamiento más operación anual: $756,000 MXN.',
+            'Resultado operativo de referencia antes de impuestos: $26,250 MXN.',
+            'La meta combina venta directa, licencias y colaboraciones; no se presenta como ingreso garantizado.'
+          ]
+        }
+      ]
+    },
+    ingresos: {
+      brief: 'Precio sugerido de lanzamiento: $149 MXN; meta inicial: 3,000 copias y $313,000 MXN netos.',
+      concepts: [
+        ['Juego base · $149 MXN', 'futuro'],
+        ['Campañas · $79 MXN', 'futuro'],
+        ['Marketplace · 15% comisión', 'futuro'],
+        ['Licencias · $12,000/año', 'futuro'],
+        ['Colaboraciones · desde $35,000', 'futuro']
+      ],
+      sections: [
+        {
+          title: 'Venta del juego base',
+          state: 'futuro',
+          text: 'La fuente principal de caja al lanzamiento sería una compra única de $149 MXN. El precio es una hipótesis comercial que debe validarse con una prueba de disposición de pago.',
+          items: [
+            'Precio al público propuesto: $149 MXN por copia.',
+            'Después de una comisión de tienda del 30%: aproximadamente $104 MXN por copia, antes de impuestos.',
+            'Meta inicial de validación: 3,000 copias, equivalentes a $447,000 MXN brutos.',
+            'Neto aproximado después de tienda: $313,000 MXN.'
+          ]
+        },
+        {
+          title: 'Contenido adicional',
+          state: 'futuro',
+          text: 'Las campañas y capítulos nuevos pueden venderse como expansiones independientes, sin bloquear la experiencia base.',
+          items: [
+            'Precio de referencia por campaña: $79 MXN.',
+            'Meta de prueba: 500 compras de una campaña, $39,500 MXN brutos.',
+            'El contenido debe justificar el pago con nuevas historias, escenarios y horas de juego.',
+            'No se usará publicidad invasiva ni mecánicas de pago que afecten la progresión.'
+          ]
+        },
+        {
+          title: 'Licencias educativas',
+          state: 'futuro',
+          text: 'Escuelas, universidades y centros culturales podrían contratar una licencia anual con materiales de apoyo y uso institucional.',
+          items: [
+            'Precio de referencia: $12,000 MXN por institución al año.',
+            'Incluye acceso acordado, guía didáctica y soporte básico.',
+            'Meta piloto: 5 instituciones, $60,000 MXN de facturación anual.',
+            'Cada contrato debe definir alcance, usuarios, soporte, impuestos y renovación.'
+          ]
+        },
+        {
+          title: 'Colaboraciones y patrocinios',
+          state: 'futuro',
+          text: 'Municipios, turismo y cultura pueden financiar contenidos específicos, siempre con objetivos, entregables y derechos de uso por escrito.',
+          items: [
+            'Paquete de colaboración de referencia: desde $35,000 MXN.',
+            'Meta piloto: 2 colaboraciones, $70,000 MXN de facturación.',
+            'El patrocinio no sustituye la independencia editorial ni la revisión cultural.',
+            'No se contabilizan contratos hasta contar con propuesta aceptada y anticipo.'
+          ]
+        },
+        {
+          title: 'Marketplace',
+          state: 'futuro',
+          text: 'En una etapa posterior, creadores podrían vender mapas, historias o recursos. La plataforma retendría una comisión y transferiría el resto al creador.',
+          items: [
+            'Comisión de plataforma propuesta: 15% de cada transacción.',
+            'Ejemplo: de una venta de $100 MXN, $15 MXN serían ingreso bruto de la plataforma.',
+            'Requiere moderación, términos de uso, facturación y control de derechos.',
+            'No se incluye en el flujo de caja del primer año: depende de comunidad y contenido suficiente.'
+          ]
+        },
+        {
+          title: 'Escenario de caja del primer año',
+          state: 'futuro',
+          text: 'Escenario prudente para presentar viabilidad, no una promesa de ventas: 7,500 juegos, cinco licencias educativas y dos colaboraciones.',
+          items: [
+            'Juego base: $783,000 MXN netos estimados.',
+            'Licencias educativas: $60,000 MXN.',
+            'Colaboraciones: $70,000 MXN.',
+            'Ingresos de referencia: $912,250 MXN.',
+            'Después de $756,000 MXN de lanzamiento y operación anual: $156,250 MXN antes de impuestos y reinversión.',
+            'La reinversión prioritaria sería contenido, soporte y reserva de caja.'
+          ]
+        }
+      ]
+    }
+  };
+
+  Object.entries(financials).forEach(([id, financial]) => {
+    const block = DATA.blocks.find((item) => item.id === id);
+    if (block) Object.assign(block, financial);
+    const tile = document.querySelector(`[data-block="${id}"]`);
+    if (!tile) return;
+    tile.querySelector('.brief').textContent = financial.brief;
+    tile.querySelector('.concepts').innerHTML = financial.concepts.map(([label, state]) => (
+      `<li><span class="dot ${state === 'futuro' ? 'future' : ''}" aria-hidden="true"></span><span>${label}</span><${state === 'futuro' ? 'em class="futurelabel">Futuro</em>' : 'span class="sr">Actual / en desarrollo</span>'}</li>`
+    )).join('');
+    const appendix = [...document.querySelectorAll('.printappendix article')]
+      .find((article) => article.querySelector('h3')?.textContent.trim() === (
+        id === 'costos' ? 'Estructura de costos' : 'Fuentes de ingreso'
+      ));
+    if (appendix) {
+      appendix.innerHTML = `<h3>${id === 'costos' ? 'Estructura de costos' : 'Fuentes de ingreso'}</h3>${
+        financial.sections.map((section) => `
+          <h4>${section.title}</h4>
+          <span class="badge ${section.state === 'futuro' ? 'future' : ''}">${section.state === 'futuro' ? 'Crecimiento futuro' : 'Actual / en desarrollo'}</span>
+          <p>${section.text}</p>
+          <ul>${section.items.map((item) => `<li>${item}</li>`).join('')}</ul>
+        `).join('')
+      }`;
+    }
+  });
+  const financialNote = document.querySelector('.compare .future .smallnote');
+  if (financialNote) {
+    financialNote.textContent = 'Las cifras de monetización y precios son proyecciones para evaluar viabilidad; no representan contratos, ventas o ingresos ya obtenidos.';
+  }
+})();
+</script><script>
+(() => {
+  const roles = [
+    ['Jesús Domínguez Ramírez', 'Programación de mecánicas, API e integración, diseño de niveles.'],
+    ['Adrián Pérez Jiménez', 'Interfaces y experiencia de usuario.'],
+    ['Luis Daniel Suárez Escamilla', 'Pruebas y contenido cultural.'],
+    ['Sayurid Bautista Cruz', 'Documentación y arte.'],
+    ['Jonathan Emmanuel Lopez Morales', 'Documentación y apoyo en la aplicación móvil.']
+  ];
+  const block = DATA.blocks.find((item) => item.id === 'recursos');
+  if (block) {
+    block.brief = 'Equipo humano con roles definidos para producir, validar y presentar el proyecto.';
+    block.concepts = [
+      ['Roles del equipo', 'actual'],
+      ['Unity + C#', 'actual'],
+      ['PWA + Flutter', 'actual'],
+      ['API y nube', 'actual'],
+      ['Contenido cultural', 'actual']
+    ];
+    const teamSection = block.sections.find((section) => section.title === 'Equipo humano');
+    if (teamSection) {
+      teamSection.text = 'Cada integrante aporta una responsabilidad principal al desarrollo del producto semilla. Los roles se coordinan durante la integración y las pruebas.';
+      teamSection.items = roles.map(([name, role]) => `${name}: ${role}`);
+    }
+  }
+  const tile = document.querySelector('[data-block="recursos"]');
+  if (tile && block) {
+    tile.querySelector('.brief').textContent = block.brief;
+    tile.querySelector('.concepts').innerHTML = block.concepts.map(([label]) => (
+      `<li><span class="dot" aria-hidden="true"></span><span>${label}</span><span class="sr">Actual / en desarrollo</span></li>`
+    )).join('');
+  }
+  const appendix = [...document.querySelectorAll('.printappendix article')]
+    .find((article) => article.querySelector('h3')?.textContent.trim() === 'Recursos clave');
+  if (appendix && block) {
+    const teamSection = block.sections.find((section) => section.title === 'Equipo humano');
+    if (teamSection) {
+      const heading = appendix.querySelector('h3');
+      const teamHeading = [...appendix.querySelectorAll('h4')]
+        .find((heading) => heading.textContent.trim() === 'Equipo humano');
+      if (heading && teamHeading) {
+        teamHeading.nextElementSibling.nextElementSibling.textContent = teamSection.text;
+        const list = teamHeading.nextElementSibling.nextElementSibling.nextElementSibling;
+        if (list?.tagName === 'UL') {
+          list.innerHTML = teamSection.items.map((item) => `<li>${item}</li>`).join('');
+        }
+      }
+    }
+  }
+})();
 </script></body></html>

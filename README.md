@@ -39,14 +39,6 @@ Ingeniería en Desarrollo y Gestión de Software · Décimo cuatrimestre
 
 </div>
 
-## Diagrama de secuencia
-[Diagrama de secuencia](./DiagramaDeSecuencia/)
-
-## Modelo Canvas
-[Link en git Pages](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/BusinessModelCanva/)
-
-## Manual de instalacion
-[Manual de Instalación](/ManualDeInstalacion/)
 ---
 
 ## Acerca del proyecto
@@ -204,6 +196,9 @@ El plan general considera **12 semanas**. La siguiente etapa se concentra en las
 
 La integración web, móvil y de nube forma parte de las siguientes entregas; su avance se registrará por componente.
 
+## Diagrama de Gantt
+![Diagrama de Gantt](/images/gantt.png)
+
 
 ## Pruebas y criterios de entrega
 
@@ -217,16 +212,19 @@ La validación contempla:
 
 Los casos de prueba iniciales deberán actualizarse al balance, especialmente para el dron EMP, la resortera direccional y las habilidades Ultimate. Los resultados, versiones y evidencias se registrarán antes de declarar lista una entrega.
 
-## Diagrama de Roles
-
-![Diagrama de Roles](images/roles_diagram.png)
 
 ## Diagrama de Arquitectura
 
 ![Diagrama de Arquitectura](images/architecture_diagram.png)
 
+## Diagrama de Roles
+
+![Diagrama de Roles](images/roles_diagram.png)
+
 
 ## Equipo
+
+![Organigrama](/images/organigrama.png)
 
 | Integrante | Áreas de trabajo propuestas |
 | :--- | :--- |
@@ -245,4 +243,15 @@ Para trabajar con el videojuego, se requiere **Unity Hub** y la versión de Unit
 La app móvil requiere Flutter, Dart y un dispositivo o emulador compatible. La PWA y la API requieren el entorno Node.js y sus dependencias; PostgreSQL será necesario para la persistencia de datos durante la integración.
 
 Los comandos de instalación, rutas de los componentes y variables de entorno se documentarán cuando estén incorporados al repositorio.
+
+# Enlaces a la documentación:
+
+## Diagrama de secuencia
+[Diagrama de secuencia](./DiagramaDeSecuencia/)
+
+## Modelo Canvas
+[Link en git Pages](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/BusinessModelCanva/)
+
+## Manual de instalacion
+[Manual de Instalación](/ManualDeInstalacion/)
 
