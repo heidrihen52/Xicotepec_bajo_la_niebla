@@ -13995,6 +13995,7 @@ const API_ACTIONS={FL01:'Identidad de empresa &middot; sin consulta',FL10:'Prepa
 for(const id of Object.keys(ROLE_BY_SCREEN))API_ACTIONS[id]='Pantalla de validaci&oacute;n y ayuda &middot; simulaci&oacute;n local';
 
 const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function decodeVisibleEntities(root=document.body){const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode()){const node=walker.currentNode,tag=node.parentElement?.tagName;if(!/^(SCRIPT|STYLE|TEXTAREA)$/.test(tag||'')&&/&(?:#\d+|#x[0-9a-f]+|[a-z][a-z0-9]+);/i.test(node.nodeValue||''))nodes.push(node)}const decoder=document.createElement('textarea');for(const node of nodes){decoder.innerHTML=node.nodeValue;node.nodeValue=decoder.value}}
 const minutes=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
 function action(text,act,extra='',disabled=false){return `<button type="button" class="drawbutton" data-action="${act}" ${extra} ${disabled?'disabled':''}>${text}</button>`}
 function goto(text,id,extra=''){return action(text,'goto',`data-to="${id}" ${extra}`)}
@@ -14150,7 +14151,7 @@ function bind(){document.addEventListener('click',e=>{const selected=e.target.cl
  document.querySelector('#connectivity').addEventListener('click',changeConnection);document.querySelector('#scenario').addEventListener('change',e=>{const value=e.target.value;if(value==='closed'){signOut()}else{state.scenario=value;state.loginError='';announce('Estado de demostraci&oacute;n: '+e.target.selectedOptions[0].textContent+'.')}renderAll()});document.querySelector('#reset').addEventListener('click',reset);document.querySelector('#demoLogin').addEventListener('click',()=>{if(!state.online){announce('Recupera la conexi&oacute;n antes de abrir la sesi&oacute;n de demostraci&oacute;n.');return}signIn();announce('Sesi&oacute;n ficticia abierta. Solo se muestran datos de demostraci&oacute;n.');renderAll()});document.querySelector('#demoLogout').addEventListener('click',()=>{signOut();renderAll()});document.querySelector('#prototypeMode').addEventListener('click',()=>{state.mode='prototype';go(state.selected[state.app])});document.querySelector('#webSize').addEventListener('click',()=>{state.webMobile=!state.webMobile;state.screenZoom=null;renderViewer()});document.querySelector('#screenPlus').addEventListener('click',()=>{state.screenZoom=Math.min(1.5,(state.screenZoom??.8)+.15);renderViewer()});document.querySelector('#screenFit').addEventListener('click',()=>{state.screenZoom=null;renderViewer()});document.querySelector('#mapPlus').addEventListener('click',()=>{state.zoom=Math.min(1.2,state.zoom+.1);renderMap()});document.querySelector('#mapMinus').addEventListener('click',()=>{state.zoom=Math.max(.25,state.zoom-.1);renderMap()});document.querySelector('#mapFit').addEventListener('click',()=>{state.zoom=Math.min(.7,Math.max(.25,(document.querySelector('#mapViewport').clientWidth-20)/1060));renderMap()});document.querySelector('#backMap').addEventListener('click',()=>{document.querySelector('#mapTitle').scrollIntoView({behavior:'smooth',block:'start'});document.querySelector('#mapTitle').focus({preventScroll:true})});
  document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select'))return;if(e.target.dataset.select&&['Enter',' '].includes(e.key)){e.preventDefault();go(e.target.dataset.select,true);return;}if(e.target.dataset.tab&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const tabs=[...document.querySelectorAll('[data-tab]')],i=tabs.indexOf(e.target),next=tabs[(i+(e.key==='ArrowRight'?1:2))%3];next.focus();next.click();return}if(state.app==='unity'&&state.mode==='prototype'){if(state.selected.unity==='VG06'){if(['1','2','3'].includes(e.key)){state.character=['Balam','Rayo','Kiro'][Number(e.key)-1];e.preventDefault();renderAll()}if(e.key==='ArrowRight'){e.preventDefault();state.playerX=Math.min(845,state.playerX+35);renderAll()}if(e.key===' '){e.preventDefault();handleAction({dataset:{action:'jump'}})}if(e.key==='Escape'){e.preventDefault();go('VG07')}}else if(state.selected.unity==='VG07'&&e.key==='Escape'){e.preventDefault();go('VG06')}}});let timer;window.addEventListener('resize',()=>{clearTimeout(timer);timer=setTimeout(()=>{state.webMobile=window.innerWidth<640;state.zoom=Math.min(.7,Math.max(.25,(document.querySelector('#mapViewport').clientWidth-20)/1060));renderMap();renderViewer()},80)});
 }
-installRequestedEnhancements();bind();state.zoom=Math.min(.65,Math.max(.25,(document.querySelector('#mapViewport').clientWidth-20)/1060));renderAll();
+installRequestedEnhancements();bind();state.zoom=Math.min(.65,Math.max(.25,(document.querySelector('#mapViewport').clientWidth-20)/1060));renderAll();decodeVisibleEntities();new MutationObserver(()=>decodeVisibleEntities()).observe(document.body,{subtree:true,childList:true,characterData:true});
  </script>
  <style>
   /* Capa visual derivada de Business Model Canvas; no modifica pantallas ni conexiones. */
@@ -14174,7 +14175,90 @@ installRequestedEnhancements();bind();state.zoom=Math.min(.65,Math.max(.25,(docu
   .panelhead h2,.previewhead h2,.detailsPanel summary,.integration h2{font-family:Georgia,serif;font-weight:400;letter-spacing:-.25px}
   .stampmark{font-family:Inter,ui-sans-serif,system-ui,sans-serif!important}
  </style>
- <style>@import url("business-canvas-skin.css");</style>
+<style id="business-canvas-skin-inline">
+/* Sistema visual basado directamente en la composición oscura del Business Model Canvas. */
+:root{
+  --canvas-ink:#082a25;
+  --canvas-deep:#061f1c;
+  --canvas-forest:#103b34;
+  --canvas-paper:#e7eadf;
+  --canvas-paper-2:#d9ded2;
+  --canvas-cream:#f2ead6;
+  --canvas-gold:#e7ae4d;
+  --canvas-copper:#9b6242;
+  --canvas-mist:#adc0b5;
+  --canvas-line:#52776b;
+}
+html{background:var(--canvas-ink)}
+body{
+  color:var(--canvas-cream)!important;
+  background-color:var(--canvas-ink)!important;
+  background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px)!important;
+  background-size:28px 28px!important;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace!important;
+}
+button,input,select{font-family:inherit!important}
+
+/* Barra de marca */
+.topbar,.pagehead{
+  border-radius:0!important;
+  border:0!important;
+  border-bottom:3px solid var(--canvas-copper)!important;
+  background:#061f1c!important;
+  box-shadow:inset 0 -1px #ffffff14!important;
+}
+.topbar{min-height:82px;padding:14px max(7vw,36px)!important;color:var(--canvas-cream)!important}
+.topbar .brand{gap:14px!important;color:var(--canvas-cream)!important;text-transform:uppercase;font-size:11px!important;letter-spacing:.4px!important}
+.topbar .brand-mark{display:grid!important}.topbar .brand span:last-child{font-size:11px!important}.top-meta{color:#c1cfc4!important;font-size:10px!important;letter-spacing:.4px!important}
+
+/* Hero y títulos de cada documento */
+main{max-width:1560px!important;padding:0 max(7vw,36px) 70px!important}
+.intro,.pagehead{
+  position:relative!important;overflow:hidden!important;
+  background-color:var(--canvas-ink)!important;
+  background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px)!important;
+  background-size:28px 28px!important;
+}
+.intro{margin:0 calc(-1 * max(7vw,36px)) 0!important;padding:68px max(7vw,36px) 56px!important;min-height:360px;border-radius:0!important;border-bottom:3px solid var(--canvas-copper)!important;box-shadow:none!important;align-items:center!important}
+.intro::before{content:"";position:absolute;right:8%;top:40px;width:35%;height:240px;border:3px solid var(--canvas-copper);box-shadow:8px 8px 0 #0008;background:linear-gradient(140deg,#0a2523,#17443d);opacity:.9}.intro::after{right:11%;top:60px;width:29%;height:195px;border:1px solid #8eaf9f!important;border-radius:90px 18px 90px 18px!important;opacity:.8!important}
+.intro>div{max-width:630px}.intro .eyebrow,.pagehead .kicker{color:var(--canvas-gold)!important;font-weight:900!important;letter-spacing:2px!important}.intro h1,.pagehead h1{font-family:Georgia,"Times New Roman",serif!important;color:var(--canvas-cream)!important;font-size:clamp(38px,4.2vw,65px)!important;line-height:1.03!important;font-weight:700!important;letter-spacing:-1.5px!important;text-shadow:0 2px #0008}.intro p:last-child,.pagehead p{color:#c9d6cd!important;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace!important;font-size:13px!important;line-height:1.7!important}.progress-tag{position:relative;z-index:2;border:1px solid var(--canvas-gold)!important;border-radius:0!important;background:#173a33!important;color:var(--canvas-cream)!important;padding:10px 13px!important;font-family:inherit!important;box-shadow:3px 3px 0 #0007!important}
+
+/* Pestañas y contenido sobre papel rayado */
+.app-tabs,.tabs{gap:0!important;margin:32px 0 0!important;border-bottom:2px solid var(--canvas-copper)!important}.app-tab,.tabs button{position:relative!important;top:auto!important;margin:0!important;border:1px solid transparent!important;border-radius:0!important;background:transparent!important;color:#d3dfd5!important;font-family:inherit!important;font-weight:800!important;letter-spacing:.2px!important}.app-tab[aria-selected="true"],.tabs button[aria-selected=true]{background:var(--canvas-gold)!important;border-color:var(--canvas-gold)!important;color:#142822!important;box-shadow:none!important}.app-summary,.app-purpose,.legend{color:#d5dfd5!important}.app-summary h2,.panelhead h2,.previewhead h2,.details h3,.integration h2{font-family:Georgia,"Times New Roman",serif!important;color:var(--canvas-cream)!important;font-size:28px!important;font-weight:700!important}.app-summary p,.screen-count{color:#b8cbbd!important}
+.workspace,.panel,.controlbox,.detailsPanel,.integration details{border:2px solid var(--canvas-copper)!important;border-radius:0!important;background:var(--canvas-paper)!important;box-shadow:7px 7px 0 #0008!important;color:#17342e!important}.screen-list,.details,.panelhead,.previewhead{background:#dce2d6!important;color:#17342e!important;border-color:#a5afa2!important}.list-label,.panel-label,.detail-block h4,.screen-id{color:#855334!important;font-weight:900!important}.screen-button{border-radius:0!important;color:#17342e!important}.screen-button[aria-current="true"]{border-color:var(--canvas-copper)!important;background:#f4efdf!important;box-shadow:inset 4px 0 var(--canvas-gold)!important}.screen-button:hover{background:#ecdfbd!important}.stage,.mapviewport,.deviceviewport{background-color:#dfe4d9!important;background-image:repeating-linear-gradient(0deg,#89968a38 0 1px,transparent 1px 23px)!important;background-size:auto!important}.stage-head{color:#17342e!important}.stage-head strong{color:#17342e!important;font-family:Georgia,serif!important}.device{border-color:#183b34!important;border-radius:0!important;box-shadow:6px 6px 0 #37494080!important}.device-top,.browserbar,.gamebar,.phone-status{background:#dce2d6!important;border-color:#87978c!important;color:#17342e!important}.wire-button,.drawbutton,.stage-controls button,.controls button,.toolbar button,.maptoolbar button,.previewhead button,.connection button{border:2px solid #43665a!important;border-radius:0!important;background:#eef0e6!important;color:#163b32!important;font-weight:900!important;box-shadow:2px 2px 0 #6d4937!important}.wire-button.primary,.phonebody>.drawbutton,.phonebody form>.drawbutton{background:var(--canvas-gold)!important;border-color:#bb7b27!important;color:#142822!important}.wire-input span:last-child,.wire-card,.wire-list-item,.stat,.sketchbox{border-color:#84958a!important;border-radius:0!important;background:#f5f2e8!important;color:#17342e!important}.placeholder{border-color:#789080!important;border-radius:0!important;background:repeating-linear-gradient(-45deg,#e8eadf 0 8px,#d9ded2 8px 9px)!important;color:#36554a!important}.wireframe-note,.notice,.apilane,.future,.demoaccess,.privacy{border-color:#9b6242!important;border-radius:0!important;background:#f0e5c9!important;color:#17342e!important}.component-list li::before{background:#9b6242!important;border-radius:0!important}.details h3,.detail-block p,.component-list li{color:#17342e!important}
+
+/* Sketches: sustituye la tarjeta blanca por hero y conserva los logos existentes. */
+.pagehead{min-height:430px!important;padding:85px 12vw 60px!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:50px!important;align-items:center!important}.pagehead::before{display:none!important}.pagehead::after{content:""!important;position:absolute!important;right:9%!important;top:58px!important;bottom:auto!important;width:420px!important;height:275px!important;border:3px solid var(--canvas-copper)!important;border-radius:0!important;background:linear-gradient(145deg,#0d2925,#17453d)!important;filter:none!important;opacity:1!important;z-index:-1!important;box-shadow:8px 8px 0 #0008!important}.pagehead>div:first-child{max-width:720px!important;position:relative;z-index:2}.pagehead .stampmark{position:relative;z-index:3;border:2px solid var(--canvas-gold)!important;border-radius:0!important;background:#173a33!important;color:var(--canvas-cream)!important;transform:none!important;box-shadow:4px 4px 0 #0008!important}.pagehead .stampmark b{color:var(--canvas-gold)!important}.page-logos{position:relative;z-index:3;display:flex!important;gap:10px!important}.page-logos img{background:#e7eadf!important;border:2px solid var(--canvas-copper)!important;border-radius:0!important;padding:7px!important;box-shadow:3px 3px 0 #0008!important}.container{max-width:1560px!important;padding:36px max(7vw,36px) 70px!important}.controlbox{background-color:#e7eadf!important;background-image:repeating-linear-gradient(0deg,#89968a30 0 1px,transparent 1px 23px)!important}.controlnote,.notice,.app-purpose,.mapfoot,.mapexplain,.previewnote,.globalfooter,.purpose{color:#23453c!important}.tabs button{color:var(--canvas-cream)!important}.tabs button[aria-selected=true]{color:#142822!important}.mapcard{border-color:#8a978a!important;border-radius:0!important;background:#f5f2e8!important;box-shadow:3px 3px 0 #8a6b5680!important}.mapcard.selected{border-color:#174f42!important}.mapcard.target{border-color:#a96b38!important}.connections,.apilane,.previewnote{border-color:#a9b3a5!important}.appnav,.webnav,.appheader{border-color:#8b9a8c!important;border-radius:0!important;background:#eef0e6!important}.appnav button,.webnav button{background:#eef0e6!important;color:#17342e!important}.appnav button.current,.webnav button.current{border-color:#a76b37!important;background:#ead5a7!important}.detailsPanel summary,.integration summary{color:#17342e!important}.ranktable th{background:#d6ded3!important}.ranktable th,.ranktable td{border-color:#9aa79a!important}
+
+@media(max-width:800px){
+  main{padding-inline:20px!important}.intro{margin-inline:-20px;padding-inline:20px!important;min-height:310px!important}.intro::before,.intro::after{display:none!important}.pagehead{min-height:360px!important;padding:65px 8vw 45px!important;grid-template-columns:1fr!important}.pagehead::after{display:none!important}.page-logos{display:none!important}.topbar{padding-inline:20px!important}.top-meta{display:none!important}
+}
+
+/* Correcciones de contraste: los bloques de papel siempre usan tinta oscura. */
+.workspace,.panel,.controlbox,.detailsPanel,.integration details{color:#17342e!important}
+.workspace h2,.workspace h3,.panel h2,.panel h3,.detailsPanel h2,.detailsPanel h3,.integration details h2,.integration details h3,.panelhead h2,.previewhead h2,.detailsPanel summary,.integration h2{color:#17342e!important;text-shadow:none!important}
+.workspace p,.workspace li,.panel p,.panel li,.detailsPanel p,.detailsPanel li,.integration details p,.integration details li{color:#29473e!important}
+.app-purpose{color:#d8e1d5!important}
+.workspace{gap:12px!important}
+
+/* No se sustituyen logos por símbolos inventados: se conserva la marca original del documento. */
+.topbar .brand-mark{display:grid!important;width:30px!important;height:30px!important;border:1px solid var(--canvas-copper)!important;border-radius:0!important;background:#173a33!important;color:var(--canvas-gold)!important;font-size:9px!important;clip-path:none!important}
+.topbar .brand span:last-child{font-size:11px!important;color:var(--canvas-cream)!important;text-transform:none!important;letter-spacing:0!important}
+
+/* Texto que vive directamente sobre la retícula oscura (no pertenece a una tarjeta). */
+.container>.integration>h2{color:var(--canvas-cream)!important;font-family:Georgia,"Times New Roman",serif!important;text-shadow:0 2px #0008!important}
+.container>.integration>p{color:#c9d6cd!important}
+.container>.integration>.journal{color:#17342e!important}
+.globalfooter,footer{border-top-color:#bd9866!important;color:#bdcfc3!important}
+.globalfooter p,footer p{color:#bdcfc3!important}
+.globalfooter b,footer b{color:var(--canvas-cream)!important}
+
+/* Leyenda de recorridos: las flechas se dibujan completas, sin depender de recortes verticales. */
+.legend i{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:48px!important;height:24px!important;overflow:visible!important;border:0!important}
+.legend i::before{content:"⟶";display:block;color:#9fba9c;font-family:Arial,sans-serif;font-size:31px;font-style:normal;font-weight:400;line-height:1;transform:translateY(-1px)}
+.legend i::after{display:none!important}
+.legend i.api::before{content:"⤳";color:#78a7bd}
+</style>
  <style id="sketch-pencil-restoration">
   /* El marco conserva el lenguaje de Business Canvas; el interior de cada dispositivo vuelve al boceto original. */
   .device,.device button,.device input,.device select{color:#1b1b1b!important;filter:grayscale(1)!important}
