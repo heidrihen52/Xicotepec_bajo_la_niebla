@@ -246,6 +246,9 @@ Los comandos de instalación, rutas de los componentes y variables de entorno se
 
 # Enlaces a la documentación:
 
+## Guía de Estilos e Identidad Visual
+[Guía de Estilos en Figma](./GuiadeEstilos/README.md)
+
 ## Diagrama de secuencia
 [Diagrama de secuencia](./DiagramaDeSecuencia/)
 
