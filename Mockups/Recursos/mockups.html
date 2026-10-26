@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Muestra navegable de mockups Flutter basada en el flujo de sketches y wireframes de Xicotepec bajo la niebla.">
+  <meta name="theme-color" content="#082a25">
+  <title>Mockups Flutter · Xicotepec bajo la niebla</title>
+  <style>
+    :root{
+      --ink:#082a25;--deep:#061f1c;--forest:#103b34;--paper:#e7eadf;--paper2:#d9ded2;
+      --cream:#f2ead6;--gold:#e7ae4d;--copper:#9b6242;--mist:#adc0b5;--line:#52776b;
+      --app-bg:#f4f6ef;--app-card:#fffef8;--app-green:#164c40;--app-green-2:#28745e;
+      --app-gold:#e9b354;--app-soft:#e3ede5;--app-muted:#64766f;--danger:#a24f42;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:var(--ink)}
+    body{margin:0;color:var(--cream);background-color:var(--ink);background-image:linear-gradient(#fff7 1px,transparent 1px),linear-gradient(90deg,#fff5 1px,transparent 1px);background-size:28px 28px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;line-height:1.5}
+    button,input{font:inherit}button{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .topbar{min-height:82px;padding:14px max(5vw,32px);display:flex;align-items:center;justify-content:space-between;gap:24px;background:var(--deep);border-bottom:3px solid var(--copper);position:sticky;top:0;z-index:50;box-shadow:0 8px 24px #0005}
+    .brand{display:flex;align-items:center;gap:14px}.brand-mark{width:42px;height:42px;display:grid;place-items:center;border:1px solid var(--copper);background:#173a33;color:var(--gold);font-weight:900}.brand strong{display:block;font-family:Georgia,serif;font-size:17px}.brand small{display:block;color:#b9c9bf;font-size:10px;letter-spacing:.8px}.top-meta{font-size:10px;color:#c1cfc4;letter-spacing:.6px;text-align:right}
+    .hero{border-bottom:3px solid var(--copper);background:linear-gradient(110deg,#082a25e8,#0d4037e8);padding:54px max(5vw,32px) 48px}.hero-inner{max-width:1500px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:70px;align-items:center}.eyebrow{margin:0 0 14px;color:var(--gold);font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase}.hero h1{margin:0;font:700 clamp(38px,5vw,68px)/1.02 Georgia,"Times New Roman",serif;letter-spacing:-1.8px}.hero h1 span{color:var(--gold)}.hero p{max-width:720px;color:#c7d5cc;font-size:13px}.hero-card{border:3px solid var(--copper);padding:24px;background:#0b2f2a;box-shadow:8px 8px 0 #0007}.hero-card b{display:block;color:var(--gold);font:700 42px/1 Georgia,serif}.hero-card span{font-size:11px;color:#c7d5cc}.hero-flow{display:flex;align-items:center;gap:8px;margin-top:18px;flex-wrap:wrap}.hero-flow i{font-style:normal;color:var(--gold)}.hero-flow code{font-size:10px;padding:4px 7px;border:1px solid #57776d;background:#103b34;color:var(--cream)}
+    main{max-width:1500px;margin:auto;padding:36px max(5vw,32px) 72px}.section-kicker{color:var(--gold);font-weight:900;font-size:10px;letter-spacing:1.7px;text-transform:uppercase}.section-title{margin:7px 0 8px;font:700 clamp(28px,3vw,42px)/1.1 Georgia,serif}.section-copy{margin:0 0 24px;color:#c5d3cb;font-size:12px;max-width:860px}
+    .flow-nav{display:flex;align-items:center;gap:0;overflow:auto;border-bottom:2px solid var(--copper);margin-bottom:28px;scrollbar-width:thin}.flow-step{min-width:max-content;padding:14px 18px;border:0;border-right:1px solid #47685e;background:transparent;color:#d5dfd7;font-weight:800;font-size:11px}.flow-step:hover,.flow-step:focus-visible{background:#15483e}.flow-step[aria-current="step"]{background:var(--gold);color:#142822}.flow-arrow{color:#86a798;padding:0 4px}
+    .workspace{display:grid;grid-template-columns:330px minmax(0,1fr);gap:16px;align-items:start}.screen-index,.preview-panel,.description-panel{border:2px solid var(--copper);background:var(--paper);color:#17342e;box-shadow:7px 7px 0 #0008}.panel-head{padding:20px 22px;border-bottom:1px solid #a9b3a5;background:#dce2d6}.panel-head h2{margin:0;font:700 28px/1.1 Georgia,serif}.panel-head p{margin:7px 0 0;font-size:10px;color:#4b655c}
+    .screen-list{display:grid;padding:12px;gap:8px;max-height:850px;overflow:auto}.screen-card{width:100%;display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center;padding:10px;border:1px solid #9aa99f;background:#f5f2e8;color:#17342e;text-align:left}.screen-card:hover{background:#eddfbd}.screen-card[aria-current="true"]{border:2px solid var(--app-green-2);box-shadow:inset 5px 0 var(--gold)}.thumb{width:54px;height:88px;display:grid;place-items:center;background:linear-gradient(#173e35 0 18px,#f5f6ef 18px);border:2px solid #45665c;position:relative;overflow:hidden}.thumb::before{content:"";width:34px;height:28px;border:1px solid #89a397;background:#fff;box-shadow:0 38px 0 -6px #cddbd1}.thumb-code{font-size:9px;font-weight:900;color:#89583c}.screen-card b{display:block;font:700 15px/1.2 Georgia,serif}.screen-card small{display:block;margin-top:4px;color:#587067;font-size:9px}.screen-card .chev{font-size:18px;color:#487064}
+    .preview-panel{min-width:0}.preview-head{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:18px 22px;border-bottom:1px solid #a9b3a5;background:#dce2d6}.preview-head h2{margin:0;font:700 30px/1.1 Georgia,serif}.screen-id{display:block;color:#855334;font-size:10px;font-weight:900;letter-spacing:1.2px}.preview-head .measure{border:1px solid #53766b;background:#eef0e6;padding:7px 10px;font-size:10px;font-weight:900;white-space:nowrap}.stage{min-height:820px;display:grid;place-items:center;padding:40px 20px;background-color:#dfe4d9;background-image:repeating-linear-gradient(0deg,#89968a38 0 1px,transparent 1px 23px)}
+    .phone-shell{width:360px;height:660px;padding:9px;border:3px solid #183b34;border-radius:28px;background:#0b211e;box-shadow:9px 10px 0 #37494080,0 26px 50px #17382e30;position:relative}.phone-shell::before{content:"";position:absolute;top:9px;left:50%;transform:translateX(-50%);width:76px;height:18px;border-radius:0 0 14px 14px;background:#0b211e;z-index:4}.phone{height:100%;border-radius:19px;overflow:hidden;background:var(--app-bg);color:#183c34;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;position:relative}.app-top{height:44px;padding:16px 18px 8px;display:flex;align-items:end;justify-content:space-between;background:#123d35;color:#f2ead6;font-size:10px;font-weight:800}.app-top .mini-mark{color:var(--app-gold);letter-spacing:1px}.phone-body{height:calc(100% - 44px);overflow:auto;scrollbar-width:none}.phone-body::-webkit-scrollbar{display:none}.screen{min-height:100%;display:flex;flex-direction:column}.screen-pad{padding:22px 20px 92px}.screen-title{margin:0 0 4px;font:800 25px/1.08 Georgia,serif;color:#123b34}.screen-sub{margin:0 0 20px;color:var(--app-muted);font-size:11px;line-height:1.45}.mock-label{display:block;margin:12px 0 6px;font-size:10px;font-weight:800;color:#355f54}.field{width:100%;height:44px;border:1px solid #aec1b7;border-radius:10px;padding:0 12px;background:#fffef8;color:#183c34;box-shadow:0 2px 0 #d5dfd6}.primary,.secondary,.link-button,.record{width:100%;min-height:44px;border-radius:10px;font-weight:800}.primary{border:1px solid #123d35;background:#164c40;color:#fff;padding:11px 14px;box-shadow:0 4px 0 #0a2d27}.primary:active{transform:translateY(2px);box-shadow:0 2px 0 #0a2d27}.secondary{border:1px solid #9bb3a7;background:#fffef8;color:#164c40;padding:10px 14px}.link-button{border:0;background:transparent;color:#28745e;padding:9px}.divider{display:flex;align-items:center;gap:8px;margin:14px 0;color:#798a84;font-size:9px}.divider::before,.divider::after{content:"";height:1px;flex:1;background:#cbd7cf}.socials{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.socials button{height:39px;border:1px solid #c2d1c8;border-radius:9px;background:#fff;color:#1e443a;font-weight:900}.helper{font-size:9px;color:#6a7e76}.error{padding:9px 10px;border-left:3px solid var(--danger);background:#f6e8e3;color:#74453d;font-size:9px;margin:12px 0}.stack{display:grid;gap:10px}.logo-wrap{display:grid;place-items:center;text-align:center;flex:1;padding:46px 24px}.lumbre-logo{width:220px;color:#102f2a}.flame{width:84px;height:104px;margin:auto;position:relative}.flame::before,.flame::after{content:"";position:absolute;inset:0;margin:auto;background:linear-gradient(145deg,#f07b2e,#c74922);clip-path:polygon(51% 0,78% 30%,70% 49%,94% 64%,77% 100%,18% 100%,2% 68%,28% 40%,38% 67%,56% 48%,42% 30%)}.flame::after{inset:25px 22px 5px;background:#f2ead6;clip-path:polygon(50% 0,78% 42%,66% 62%,83% 100%,17% 100%,20% 62%)}.lumbre-logo strong{display:block;font:900 34px/1 Arial,sans-serif;letter-spacing:1px}.lumbre-logo small{font-weight:900;letter-spacing:6px}.brand-signature{margin-top:18px;color:#70847c;font-size:10px;letter-spacing:1px}.xico-logo{width:242px;padding:22px 12px;text-align:center;border:1px solid #315c4f;background:radial-gradient(circle at 50% 30%,#315f52,#102f2a 70%);box-shadow:0 12px 24px #092b2440}.xico-logo .seal{width:54px;height:54px;margin:auto;border:4px double var(--app-gold);border-radius:50%;display:grid;place-items:center;color:var(--app-gold);font:900 25px Georgia,serif}.xico-logo strong{display:block;margin-top:8px;font:900 26px/1 Georgia,serif;color:var(--app-gold);text-shadow:0 2px #000}.xico-logo small{color:#f3ead3;letter-spacing:3px;font-size:8px}.progress-box{display:grid;place-items:center;gap:18px;padding:58px 24px}.progress-track{width:100%;height:12px;border-radius:20px;background:#cfddd4;overflow:hidden}.progress-track span{display:block;width:78%;height:100%;background:linear-gradient(90deg,#28745e,#e9b354)}.progress-status{font-size:11px;color:#5c736a}.progress-value{font:900 32px/1 Georgia,serif;color:#164c40}.home-hero{padding:24px 20px 26px;background:linear-gradient(145deg,#123d35,#1e6553);color:#fff;position:relative;overflow:hidden}.home-hero::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;right:-45px;top:-60px;background:#e9b35433}.home-hero p{margin:0;color:#bdd4c9;font-size:10px}.home-hero h2{margin:5px 0 0;font:700 28px Georgia,serif}.avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#f1d8a8;color:#17483b;font-weight:900;border:2px solid #edbd67;margin-bottom:14px}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 20px}.metric{padding:15px;border:1px solid #c8d6ce;border-radius:13px;background:#fffef8;box-shadow:0 5px 12px #17382e12}.metric b{display:block;font:800 23px Georgia,serif;color:#164c40}.metric small{color:#697d75;font-size:9px}.section-row{display:flex;align-items:center;justify-content:space-between;margin:18px 20px 10px}.section-row h3{margin:0;font:700 18px Georgia,serif}.section-row button{border:0;background:transparent;color:#28745e;font-size:10px;font-weight:800}.record{display:grid;grid-template-columns:43px 1fr auto;text-align:left;gap:11px;align-items:center;margin:0 20px;padding:13px;border:1px solid #bdcec4;background:#fffef8;color:#183c34}.record-icon{width:43px;height:43px;border-radius:10px;display:grid;place-items:center;background:#dcebe1;color:#1c624f;font-weight:900}.record b{display:block;font-size:11px}.record small{display:block;color:#71827b;font-size:8px;margin-top:3px}.record .points{color:#9a6724;font-weight:900;font-size:10px}.achievement{margin:14px 20px;padding:13px;border-radius:12px;background:#f1e2bd;color:#62471d;font-size:10px;font-weight:800}.bottom-nav{position:absolute;left:0;right:0;bottom:0;height:70px;display:grid;grid-template-columns:repeat(4,1fr);background:#fffef8;border-top:1px solid #ccd8d0;z-index:3}.bottom-nav button{border:0;background:transparent;color:#71827b;font-size:8px;font-weight:800}.bottom-nav button span{display:block;font-size:20px;line-height:1.1}.bottom-nav button.current{color:#1e7059;background:#eaf2ec}.history-toolbar{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:18px}.filter{height:40px;border:1px solid #aec1b7;border-radius:9px;background:#fff;padding:0 10px;color:#21473d;font-size:10px}.refresh{border:1px solid #a8beb2;border-radius:9px;background:#fff;color:#1c624f;padding:0 12px;font-weight:900}.history-list{display:grid;gap:11px}.history-card{border:1px solid #c1d0c8;border-radius:13px;background:#fffef8;padding:14px}.history-card-head{display:flex;justify-content:space-between;gap:10px}.history-card h3{margin:0;font-size:12px}.status-pill{background:#dceee4;color:#246049;padding:3px 6px;border-radius:20px;font-size:8px;font-weight:900}.history-card p{margin:8px 0;color:#6a7c75;font-size:9px}.history-stats{display:flex;justify-content:space-between;border-top:1px solid #e0e7e2;padding-top:9px;font-size:9px;font-weight:800}.detail-hero{margin:-22px -20px 18px;padding:26px 20px;background:linear-gradient(145deg,#153f37,#236a57);color:#fff}.detail-hero small{color:#bdd4c9;font-size:9px}.detail-hero h2{margin:6px 0;font:700 24px Georgia,serif}.detail-hero .status-pill{display:inline-block}.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.detail-stat{padding:12px 6px;text-align:center;border:1px solid #c3d1c8;border-radius:10px;background:#fff}.detail-stat b{display:block;font:800 17px Georgia,serif;color:#164c40}.detail-stat small{font-size:8px;color:#6d7e77}.bars{margin-top:20px}.bar-row{display:grid;grid-template-columns:46px 1fr 38px;gap:8px;align-items:center;margin:10px 0;font-size:9px}.bar{height:8px;border-radius:8px;background:#dce6df;overflow:hidden}.bar i{display:block;height:100%;background:#28745e}.bar-row:nth-child(2) .bar i{background:#d29c43}.bar-row:nth-child(3) .bar i{background:#9b6242}.description-panel{grid-column:2;padding:22px;margin-top:0;display:grid;grid-template-columns:1.1fr 1fr;gap:24px}.description-panel h3{margin:0 0 6px;font:700 22px Georgia,serif}.description-panel p{margin:0;color:#49645b;font-size:11px}.component-tags{display:flex;flex-wrap:wrap;gap:6px}.component-tags span{border:1px solid #91aa9d;background:#f5f2e8;padding:5px 7px;font-size:9px;font-weight:800}.preview-note{grid-column:1/-1;margin:0;padding:12px 14px;border-left:3px solid var(--copper);background:#f0e5c9;color:#29483e;font-size:10px}
+    .artifact-links{margin-top:30px;padding:18px 20px;border:2px solid var(--copper);background:#0b2f2a;color:#c9d6cd}.artifact-links a{color:var(--gold);font-weight:900}.artifact-links p{margin:6px 0;font-size:11px}
+    @media(max-width:1050px){.hero-inner{grid-template-columns:1fr}.hero-card{max-width:520px}.workspace{grid-template-columns:1fr}.screen-list{grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}.description-panel{grid-column:1}.stage{min-height:760px}}
+    @media(max-width:640px){.topbar{padding-inline:16px}.top-meta{display:none}.hero{padding:40px 18px}.hero-inner{gap:28px}main{padding:30px 14px 60px}.screen-list{grid-template-columns:1fr}.preview-head{align-items:flex-start;flex-direction:column}.stage{padding:22px 4px;min-height:690px}.phone-shell{transform:scale(.88);margin:-40px}.description-panel{grid-template-columns:1fr}.flow-nav{margin-inline:-14px}.flow-step{padding-inline:13px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark" aria-hidden="true">XBN</div><div><strong>Xicotepec bajo la niebla</strong><small>LUMBRE STUDIO · MOCKUPS</small></div></div>
+    <div class="top-meta">PROYECTO INTEGRADOR · DISEÑO DE INTERFACES<br>MUESTRA FLUTTER · 7 PANTALLAS</div>
+  </header>
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">Diseño visual · muestra navegable</p>
+        <h1>Mockups de la <span>app Flutter</span></h1>
+        <p>Una muestra de alta fidelidad basada en el orden, propósito y navegación ya definidos en <b>sketches.html</b> y <b>wire.html</b>. No sustituye las 60 pantallas: desarrolla solo el recorrido principal solicitado.</p>
+        <div class="hero-flow" aria-label="Recorrido principal"><code>FL01</code><i>→</i><code>FL10</code><i>→</i><code>FL02</code><i>→</i><code>FL04</code><i>→</i><code>FL05</code><i>→</i><code>FL06</code></div>
+      </div>
+      <aside class="hero-card"><b>7</b><span>mockups desarrollados · flujo Flutter<br>incluye la rama FL03 Crear cuenta</span></aside>
+    </div>
+  </section>
+  <main>
+    <p class="section-kicker">01 · Recorrido seleccionado</p>
+    <h2 class="section-title">Del splash al detalle de partida</h2>
+    <p class="section-copy">Selecciona una pantalla o usa los controles dentro del teléfono. La navegación reproduce las conexiones reales de los sketches; los cambios son únicamente de fidelidad visual.</p>
+
+    <nav class="flow-nav" aria-label="Pantallas del recorrido" id="flowNav"></nav>
+
+    <div class="workspace">
+      <aside class="screen-index">
+        <div class="panel-head"><h2>Pantallas</h2><p>Muestra parcial · toca una tarjeta para ampliar</p></div>
+        <div class="screen-list" id="screenList"></div>
+      </aside>
+
+      <section class="preview-panel" aria-live="polite">
+        <div class="preview-head">
+          <div><span class="screen-id" id="screenCode">FL01</span><h2 id="screenName">Splash de empresa</h2></div>
+          <span class="measure">360 × 660 px</span>
+        </div>
+        <div class="stage">
+          <div class="phone-shell">
+            <div class="phone">
+              <div class="app-top"><span class="mini-mark">XBN</span><span>APP FLUTTER</span></div>
+              <div class="phone-body" id="phoneBody"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="description-panel">
+        <div><span class="screen-id">DESCRIPCIÓN DE PANTALLA</span><h3 id="descriptionTitle">Splash de empresa</h3><p id="descriptionText"></p></div>
+        <div><span class="screen-id">ELEMENTOS CONSERVADOS</span><div class="component-tags" id="componentTags"></div></div>
+        <p class="preview-note" id="acceptance"></p>
+      </section>
+    </div>
+
+    <aside class="artifact-links">
+      <strong>Flujo revisado con Archify</strong>
+      <p>La vista de flujo validada se guarda junto a este prototipo como evidencia del recorrido y sus ramas.</p>
+      <a href=".archify/workflow-mockups-flutter-20261025-123016/flujo-validado.html">Abrir diagrama del flujo →</a>
+    </aside>
+  </main>
+
+  <template id="fl01">
+    <section class="screen">
+      <div class="logo-wrap">
+        <button class="link-button" data-go="FL10" aria-label="Continuar a progreso y carga">
+          <span class="lumbre-logo"><span class="flame" aria-hidden="true"></span><strong>LUMBRE</strong><small>STUDIO</small></span>
+        </button>
+        <p class="brand-signature">IDENTIDAD DE LA EMPRESA</p>
+      </div>
+      <button class="primary" style="margin:0 20px 26px;width:calc(100% - 40px)" data-go="FL10">Comenzar</button>
+    </section>
+  </template>
+  <template id="fl10">
+    <section class="screen">
+      <div class="progress-box">
+        <div class="xico-logo"><div class="seal">X</div><strong>XICOTEPEC</strong><small>BAJO LA NIEBLA</small></div>
+        <div class="progress-value">78%</div>
+        <div class="progress-track"><span></span></div>
+        <p class="progress-status">Preparando tu aplicación y comprobando la sesión…</p>
+        <button class="primary" data-go="FL02">Continuar al acceso</button>
+      </div>
+    </section>
+  </template>
+  <template id="fl02">
+    <section class="screen screen-pad">
+      <h2 class="screen-title">Bienvenido de vuelta</h2><p class="screen-sub">Inicia sesión para consultar tu historial, estadísticas y logros.</p>
+      <form class="stack" data-submit="FL04">
+        <label><span class="mock-label">Correo</span><input class="field" type="email" value="demo@ejemplo.test" aria-label="Correo"></label>
+        <label><span class="mock-label">Contraseña</span><input class="field" type="password" value="demo1234" aria-label="Contraseña"></label>
+        <button type="button" class="link-button" style="text-align:left;padding-left:0">Mostrar contraseña</button>
+        <p class="error">Acceso de demostración. No escribas credenciales reales.</p>
+        <button class="primary" type="submit">Entrar</button>
+        <button class="secondary" type="button" data-go="FL03">Crear cuenta</button>
+      </form>
+      <div class="divider">o continúa con</div>
+      <div class="socials"><button>G</button><button></button><button>f</button></div>
+    </section>
+  </template>
+  <template id="fl03">
+    <section class="screen screen-pad">
+      <h2 class="screen-title">Crear cuenta</h2><p class="screen-sub">Una cuenta compartida para acceder a las experiencias del proyecto.</p>
+      <form class="stack" data-submit="FL04">
+        <label><span class="mock-label">Alias</span><input class="field" value="NieblaDemo" aria-label="Alias"></label>
+        <label><span class="mock-label">Correo</span><input class="field" type="email" value="demo@ejemplo.test" aria-label="Correo"></label>
+        <label><span class="mock-label">Contraseña</span><input class="field" type="password" value="demo1234" aria-label="Contraseña"></label>
+        <label><span class="mock-label">Confirmar contraseña</span><input class="field" type="password" value="demo1234" aria-label="Confirmar contraseña"></label>
+        <button class="primary" type="submit">Crear cuenta</button>
+        <button class="link-button" type="button" data-go="FL02">Volver a iniciar sesión</button>
+      </form>
+    </section>
+  </template>
+  <template id="fl04">
+    <section class="screen">
+      <div class="home-hero"><div class="avatar">ND</div><p>Hola,</p><h2>NieblaDemo</h2></div>
+      <div class="metrics"><div class="metric"><b>1</b><small>partida</small></div><div class="metric"><b>08:00</b><small>tiempo jugado</small></div></div>
+      <div class="section-row"><h3>Última partida</h3><button data-go="FL05">Ver historial</button></div>
+      <button class="record" data-go="FL06"><span class="record-icon">UTXJ</span><span><b>Tutorial UTXJ</b><small>Completado · XBN-UTXJ-001</small></span><span class="points">1,250 pt</span></button>
+      <div class="achievement">☆ Primer paso · logro obtenido</div>
+      <nav class="bottom-nav" aria-label="Navegación inferior"><button class="current"><span>⌂</span>Inicio</button><button data-go="FL05"><span>≡</span>Historial</button><button><span>▥</span>Estadísticas</button><button><span>◎</span>Perfil</button></nav>
+    </section>
+  </template>
+  <template id="fl05">
+    <section class="screen screen-pad">
+      <h2 class="screen-title">Historial</h2><p class="screen-sub">Consulta tus partidas descargadas y filtra por nivel.</p>
+      <div class="history-toolbar"><select class="filter" aria-label="Nivel"><option>Tutorial UTXJ</option><option>Todos</option></select><button class="refresh">↻</button></div>
+      <div class="history-list">
+        <button class="history-card" data-go="FL06"><span class="history-card-head"><h3>Tutorial UTXJ</h3><span class="status-pill">Completado</span></span><p>07/10/2026 · XBN-UTXJ-001</p><span class="history-stats"><span>08:00</span><span>1,250 puntos</span><span>2 derrotas</span></span></button>
+        <article class="history-card"><span class="history-card-head"><h3>Próximos niveles</h3><span class="status-pill">Pendiente</span></span><p>El historial conserva la estructura para nuevas partidas.</p></article>
+      </div>
+      <nav class="bottom-nav" aria-label="Navegación inferior"><button data-go="FL04"><span>⌂</span>Inicio</button><button class="current"><span>≡</span>Historial</button><button><span>▥</span>Estadísticas</button><button><span>◎</span>Perfil</button></nav>
+    </section>
+  </template>
+  <template id="fl06">
+    <section class="screen screen-pad">
+      <div class="detail-hero"><small>XBN-UTXJ-001</small><h2>Tutorial UTXJ</h2><span class="status-pill">Completado</span></div>
+      <div class="detail-grid"><div class="detail-stat"><b>08:00</b><small>duración</small></div><div class="detail-stat"><b>1,250</b><small>puntos</small></div><div class="detail-stat"><b>2</b><small>derrotas</small></div></div>
+      <div class="bars"><span class="mock-label">Tiempo por personaje</span><div class="bar-row"><b>Balam</b><span class="bar"><i style="width:75%"></i></span><span>03:00</span></div><div class="bar-row"><b>Rayo</b><span class="bar"><i style="width:62%"></i></span><span>02:30</span></div><div class="bar-row"><b>Kiro</b><span class="bar"><i style="width:62%"></i></span><span>02:30</span></div></div>
+      <button class="secondary" style="margin-top:22px" data-go="FL05">← Volver al historial</button>
+    </section>
+  </template>
+
+  <script>
+    const screens={
+      FL01:{name:'Splash de empresa',purpose:'Presentar a Lumbre Studio antes de cargar la aplicación.',components:['Identidad de Lumbre Studio','Logo de empresa','Continuar'],acceptance:'El splash abre FL10 como una pantalla distinta de progreso y carga.'},
+      FL10:{name:'Progreso y carga',purpose:'Preparar la aplicación y comprobar la sesión después del splash.',components:['Marca del juego','Barra de progreso','Porcentaje','Estado de preparación'],acceptance:'Al completar la carga, abre Inicio con sesión o Iniciar sesión sin ella.'},
+      FL02:{name:'Iniciar sesión',purpose:'Acceder a la consulta personal mediante una cuenta de demostración.',components:['Correo','Contraseña','Mostrar contraseña','Entrar','Crear cuenta','Accesos sociales'],acceptance:'El error conserva la pantalla; el acceso válido abre Inicio.'},
+      FL03:{name:'Crear cuenta',purpose:'Ensayar el registro de una cuenta compartida entre aplicaciones.',components:['Alias','Correo','Contraseña','Confirmación','Crear cuenta','Volver'],acceptance:'El registro válido abre Inicio; volver regresa a Iniciar sesión.'},
+      FL04:{name:'Inicio',purpose:'Ver el resumen personal y la última partida.',components:['Alias','Partidas y tiempo','Última partida','Mis logros','Barra inferior'],acceptance:'La barra inferior mantiene Inicio, Historial, Estadísticas y Perfil.'},
+      FL05:{name:'Historial',purpose:'Consultar partidas descargadas y filtrar por nivel.',components:['Filtro','Actualizar','Lista de partidas','Fecha','Duración','Puntos','Barra inferior'],acceptance:'Abrir una partida lleva a FL06; volver a Inicio conserva la navegación principal.'},
+      FL06:{name:'Detalle de partida',purpose:'Examinar los datos de una partida y el uso de personajes.',components:['ID y nivel','Resultado','Duración','Puntos','Derrotas','Uso de personajes','Volver'],acceptance:'Volver abre Historial sin perder el contexto de la consulta.'}
+    };
+    const order=['FL01','FL10','FL02','FL03','FL04','FL05','FL06'];
+    let current='FL01';
+    const $=s=>document.querySelector(s);
+    function renderNav(){
+      $('#flowNav').innerHTML=order.map((id,i)=>`${i?'<span class="flow-arrow" aria-hidden="true">→</span>':''}<button class="flow-step" data-go="${id}" ${id===current?'aria-current="step"':''}>${id} · ${screens[id].name}</button>`).join('');
+      $('#screenList').innerHTML=order.map(id=>`<button class="screen-card" data-go="${id}" aria-current="${id===current}"><span class="thumb" aria-hidden="true"></span><span><span class="thumb-code">${id}</span><b>${screens[id].name}</b><small>${screens[id].purpose}</small></span><span class="chev">›</span></button>`).join('');
+    }
+    function show(id){
+      if(!screens[id])return;current=id;const data=screens[id],template=document.querySelector(`#${id.toLowerCase()}`);
+      $('#phoneBody').replaceChildren(template.content.cloneNode(true));
+      $('#screenCode').textContent=id;$('#screenName').textContent=data.name;$('#descriptionTitle').textContent=`${id} · ${data.name}`;$('#descriptionText').textContent=data.purpose;
+      $('#componentTags').innerHTML=data.components.map(x=>`<span>${x}</span>`).join('');$('#acceptance').textContent=`Criterio conservado: ${data.acceptance}`;
+      renderNav();document.title=`${id} · ${data.name} · Mockups Flutter`;
+    }
+    document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)show(b.dataset.go)});
+    document.addEventListener('submit',e=>{const form=e.target.closest('[data-submit]');if(!form)return;e.preventDefault();show(form.dataset.submit)});
+    show(current);
+  </script>
+</body>
+</html>
