@@ -256,7 +256,7 @@ Los comandos de instalación, rutas de los componentes y variables de entorno se
 [Diagrama de wireframes](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/AvanceWireframes/)
 
 ## Diagrama de Mockups
-[Diagrama de mockups](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/Mockups/Recursos/)
+[Diagrama de mockups](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/Mockups/)
 
 ## Modelo Canvas
 [Link en git Pages](https://heidrihen52.github.io/Xicotepec_bajo_la_niebla/BusinessModelCanva/)
