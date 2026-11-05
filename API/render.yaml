@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: xicotepec-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/src/server.js
+    healthCheckPath: /health
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: NODE_VERSION
+        value: 24.22.0
+      - key: DB_PATH
+        value: /tmp/xicotepec.sqlite

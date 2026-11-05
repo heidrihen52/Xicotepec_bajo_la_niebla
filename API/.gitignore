@@ -1,0 +1,11 @@
+node_modules/
+dist/
+evidencias-locales/
+.local-deploy/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.env
+.env.*
+!.env.example
+
